@@ -1,19 +1,14 @@
 use bevy::{
     prelude::{Component, NodeBundle, TextBundle},
+    text::{Text, TextAlignment},
     ui::{BackgroundColor, BorderColor, Interaction, Style, ZIndex},
 };
 
-mod background_color;
-pub use background_color::*;
-
-mod border_color;
-pub use border_color::*;
-
-mod z_index;
-pub use z_index::*;
-
-mod styles;
-pub use styles::*;
+pub mod background_color;
+pub mod border_color;
+pub mod styles;
+pub mod text;
+pub mod z_index;
 
 pub trait ApplyClass {
     type Component: Component;
@@ -51,6 +46,7 @@ impl<T: ApplyClass> ApplyClass for InteractionClass<T> {
     }
 }
 
+#[doc(hidden)]
 pub fn apply_class_to_node_bundle<C: ApplyClass>(
     bundle: &mut NodeBundle,
     interaction: Interaction,
@@ -61,6 +57,7 @@ pub fn apply_class_to_node_bundle<C: ApplyClass>(
     class.apply_class(interaction, C::Component::from_bundle(bundle));
 }
 
+#[doc(hidden)]
 pub fn apply_class_to_text_bundle<C: ApplyClass>(
     bundle: &mut TextBundle,
     interaction: Interaction,
@@ -114,5 +111,17 @@ impl FromBundle<NodeBundle> for ZIndex {
 impl FromBundle<TextBundle> for ZIndex {
     fn from_bundle(bundle: &mut TextBundle) -> &mut Self {
         &mut bundle.z_index
+    }
+}
+
+impl FromBundle<TextBundle> for Text {
+    fn from_bundle(bundle: &mut TextBundle) -> &mut Self {
+        &mut bundle.text
+    }
+}
+
+impl FromBundle<TextBundle> for TextAlignment {
+    fn from_bundle(bundle: &mut TextBundle) -> &mut Self {
+        &mut bundle.text.alignment
     }
 }

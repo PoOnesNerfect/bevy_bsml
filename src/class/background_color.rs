@@ -1,4 +1,4 @@
-use crate::ApplyClass;
+use crate::class::ApplyClass;
 use bevy::{
     prelude::Color,
     ui::{BackgroundColor, Interaction},

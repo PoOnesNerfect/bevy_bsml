@@ -1,23 +1,31 @@
-use crate::{InteractionClass, StyleClass};
+use crate::class::{styles::StyleClass, text::TextClass, InteractionClass};
 use bevy::{
     prelude::{Commands, Component, Entity, Resource},
     ui::{BackgroundColor, BorderColor, Interaction, Style, ZIndex},
 };
 use std::sync::{Arc, OnceLock, RwLock};
 
+#[doc(hidden)]
 #[derive(Debug, Default, Clone, Resource)]
 pub struct StyleClassMap(pub Option<Vec<(Entity, Vec<InteractionClass<StyleClass>>)>>);
 
+#[doc(hidden)]
 #[derive(Debug, Default, Clone, Resource)]
 pub struct BackgroundColorClassMap(
     pub Option<Vec<(Entity, Vec<InteractionClass<BackgroundColor>>)>>,
 );
 
+#[doc(hidden)]
 #[derive(Debug, Default, Clone, Resource)]
 pub struct BorderColorClassMap(pub Option<Vec<(Entity, Vec<InteractionClass<BorderColor>>)>>);
 
+#[doc(hidden)]
 #[derive(Debug, Default, Clone, Resource)]
 pub struct ZIndexClassMap(pub Option<Vec<(Entity, Vec<InteractionClass<ZIndex>>)>>);
+
+#[doc(hidden)]
+#[derive(Debug, Default, Clone, Resource)]
+pub struct TextClassMap(pub Option<Vec<(Entity, Vec<InteractionClass<TextClass>>)>>);
 
 #[derive(Debug, Default, Clone)]
 pub struct EntityClassMaps {
@@ -25,6 +33,7 @@ pub struct EntityClassMaps {
     pub background_color: BackgroundColorClassMap,
     pub border_color: BorderColorClassMap,
     pub z_index: ZIndexClassMap,
+    pub text: TextClassMap,
 }
 
 impl EntityClassMaps {
@@ -33,6 +42,7 @@ impl EntityClassMaps {
             && self.background_color.0.is_none()
             && self.border_color.0.is_none()
             && self.z_index.0.is_none()
+            && self.text.0.is_none()
     }
 
     pub fn sync_resources(self, commands: &mut Commands) {
@@ -60,6 +70,10 @@ impl EntityClassMaps {
 
             if synced.z_index.0.is_some() {
                 commands.insert_resource(synced.z_index);
+            }
+
+            if synced.text.0.is_some() {
+                commands.insert_resource(synced.text);
             }
         }
     }
@@ -97,37 +111,66 @@ impl EntityClassMaps {
             }
         }
 
+        if let Some(text) = other.text.0 {
+            if let Some(self_text) = self.text.0.as_mut() {
+                self_text.extend(text);
+            } else {
+                self.text = TextClassMap(Some(text));
+            }
+        }
+
         self.clone()
     }
 }
 
+#[doc(hidden)]
 pub trait InsertEntityClassMaps<T: Component> {
     fn insert_entity_class_maps(self, entity: Entity, class_map: &mut EntityClassMaps);
 }
 
-impl<T: Into<StyleClass>> InsertEntityClassMaps<Style> for InteractionClass<T> {
+impl InsertEntityClassMaps<Style> for InteractionClass<StyleClass> {
     fn insert_entity_class_maps(self, entity: Entity, class_map: &mut EntityClassMaps) {
-        let class = InteractionClass {
-            inner: self.inner.into(),
-            interaction: self.interaction,
-        };
-
         if let Some(class_map) = class_map.style.0.as_mut() {
             if let Some(classes) = class_map.iter_mut().find(|(e, _)| *e == entity) {
-                classes.1.push(class);
+                classes.1.push(self);
             } else {
-                class_map.push((entity, vec![class]));
+                class_map.push((entity, vec![self]));
             }
         } else {
-            class_map.style = StyleClassMap(Some(vec![(entity, vec![class])]));
+            class_map.style = StyleClassMap(Some(vec![(entity, vec![self])]));
         }
     }
 }
 
-impl<T: Into<StyleClass>> InsertEntityClassMaps<Style> for T {
+impl InsertEntityClassMaps<Style> for StyleClass {
     fn insert_entity_class_maps(self, entity: Entity, class_map: &mut EntityClassMaps) {
         let class = InteractionClass {
-            inner: self.into(),
+            inner: self,
+            interaction: Interaction::None,
+        };
+
+        class.insert_entity_class_maps(entity, class_map)
+    }
+}
+
+impl InsertEntityClassMaps<Style> for InteractionClass<TextClass> {
+    fn insert_entity_class_maps(self, entity: Entity, class_map: &mut EntityClassMaps) {
+        if let Some(class_map) = class_map.text.0.as_mut() {
+            if let Some(classes) = class_map.iter_mut().find(|(e, _)| *e == entity) {
+                classes.1.push(self);
+            } else {
+                class_map.push((entity, vec![self]));
+            }
+        } else {
+            class_map.text = TextClassMap(Some(vec![(entity, vec![self])]));
+        }
+    }
+}
+
+impl InsertEntityClassMaps<Style> for TextClass {
+    fn insert_entity_class_maps(self, entity: Entity, class_map: &mut EntityClassMaps) {
+        let class = InteractionClass {
+            inner: self,
             interaction: Interaction::None,
         };
 

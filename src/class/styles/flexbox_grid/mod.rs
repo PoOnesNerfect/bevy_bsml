@@ -1,5 +1,7 @@
-use crate::ApplyClass;
+use crate::class::ApplyClass;
 use bevy::ui::{Interaction, JustifyContent, Style};
+
+use super::StyleClass;
 
 impl ApplyClass for JustifyContent {
     type Component = Style;
@@ -9,4 +11,4 @@ impl ApplyClass for JustifyContent {
     }
 }
 
-pub const JUSTIFY_CENTER: JustifyContent = JustifyContent::Center;
+pub const JUSTIFY_CENTER: StyleClass = StyleClass::JustifyContent(JustifyContent::Center);

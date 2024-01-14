@@ -1,4 +1,4 @@
-use crate::ApplyClass;
+use crate::class::ApplyClass;
 use bevy::ui::{Interaction, ZIndex};
 
 impl ApplyClass for ZIndex {

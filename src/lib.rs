@@ -5,8 +5,7 @@ use bevy::{
     reflect::Reflect,
 };
 
-mod class;
-pub use class::*;
+pub mod class;
 
 mod map;
 pub use map::*;
@@ -14,7 +13,7 @@ pub use map::*;
 mod systems;
 use systems::{
     apply_background_color_class_system, apply_border_color_class_system, apply_style_class_system,
-    apply_z_index_class_system,
+    apply_text_class_system, apply_z_index_class_system,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -26,11 +25,13 @@ impl Plugin for BsmlPlugin {
         app.init_resource::<BackgroundColorClassMap>();
         app.init_resource::<BorderColorClassMap>();
         app.init_resource::<ZIndexClassMap>();
+        app.init_resource::<TextClassMap>();
 
         app.add_systems(bevy::prelude::Update, apply_style_class_system);
         app.add_systems(bevy::prelude::Update, apply_border_color_class_system);
         app.add_systems(bevy::prelude::Update, apply_background_color_class_system);
         app.add_systems(bevy::prelude::Update, apply_z_index_class_system);
+        app.add_systems(bevy::prelude::Update, apply_text_class_system);
     }
 }
 
@@ -63,13 +64,13 @@ macro_rules! bsml {
             #[allow(unused_variables)]
             fn spawn(&self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> $crate::bevy::ecs::entity::Entity {
                 #[allow(unused_imports)]
-                use $crate::{ApplyClass, InsertEntityClassMaps};
+                use $crate::{class::ApplyClass, InsertEntityClassMaps};
 
                 #[allow(unused_mut)]
                 let mut bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
                 $($(
-                    $crate::apply_class_to_node_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
+                    $crate::class::apply_class_to_node_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
                 )*)?
 
                 let parent = commands.spawn((self.clone(), bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
@@ -104,7 +105,7 @@ macro_rules! bsml {
         let mut bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
         $($(
-            $crate::apply_class_to_node_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
+            $crate::class::apply_class_to_node_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
         )*)?
 
         let node = $commands.spawn((bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
@@ -125,10 +126,14 @@ macro_rules! bsml {
         let mut bundle = $crate::bevy::prelude::TextBundle::from_section($crate::bsml!(@stringify($this) in: [$($words)+], out: [], fields: []), $crate::bevy::text::TextStyle::default());
 
         $($(
-            $crate::apply_class_to_text_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
+            $crate::class::apply_class_to_text_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
         )*)?
 
         let id = $commands.spawn((bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
+
+        $($(
+            $class .insert_entity_class_maps(id, &mut $class_maps);
+        )*)?
 
         id
     }};
@@ -207,7 +212,7 @@ macro_rules! bsml {
             true
         }
     };
-    (@taking_slot (text) $($_:tt)?) => {};
+    (@taking_slot (text $($_:tt)*) $($_1:tt)?) => {};
     (@taking_slot (node $($_:tt)*) $($_1:tt)?) => {};
     (@taking_slot ($($_:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {
         $($(

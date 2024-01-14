@@ -2,7 +2,7 @@ use self::{
     layout::AspectRatio,
     sizing::{Height, Width},
 };
-use crate::ApplyClass;
+use crate::class::ApplyClass;
 use bevy::ui::{Interaction, JustifyContent, Style};
 use derive_more::From;
 

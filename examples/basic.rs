@@ -6,9 +6,15 @@ use bevy::prelude::{
 use bevy::text::TextStyle;
 use bevy::ui::{AlignItems, BackgroundColor, BorderColor, JustifyContent, Style, UiRect, Val};
 use bevy::DefaultPlugins;
-use bevy_bsml::flexbox_grid::JUSTIFY_CENTER;
-use bevy_bsml::sizing::{Height, Width, H_FULL, W_FULL};
-use bevy_bsml::{bsml, hovered, pressed, BsmlCommand, BsmlPlugin};
+use bevy_bsml::class::text::FontSize;
+use bevy_bsml::class::{
+    hovered, pressed,
+    styles::{
+        flexbox_grid::JUSTIFY_CENTER,
+        sizing::{Height, Width, H_FULL, W_FULL},
+    },
+};
+use bevy_bsml::{bsml, BsmlCommand, BsmlPlugin};
 
 bsml! {
     (Menu class=[W_FULL, H_FULL, JUSTIFY_CENTER, BackgroundColor::DEFAULT, hovered(BackgroundColor::DEFAULT), pressed(BackgroundColor(Color::rgb(0.75, 0.75, 0.75)))]) {
@@ -24,14 +30,12 @@ bsml! {
         {name: String}
         class=[Width::px(100.0), Height::px(100.0), BackgroundColor(Color::rgb(0.65, 0.65, 0.65)), hovered(BackgroundColor(Color::rgb(0.75, 0.75, 0.75))), pressed(BackgroundColor::DEFAULT)]
     ) {
-        (text) { {i}: {name} }
+        (text class=[FontSize::px(12.0), hovered(FontSize::px(24.0))]) { {i}: {name} }
     }
 }
 
-fn _onhover() {}
-
 fn setup(mut commands: Commands) {
-    commands.spawn_empty().insert(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle::default());
 }
 
 fn spawn_ui(mut commands: Commands) {

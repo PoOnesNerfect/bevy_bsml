@@ -1,12 +1,12 @@
-use super::ApplyClass;
+use super::{ApplyClass, StyleClass};
 use bevy::ui::{Interaction, Style};
 
 #[derive(Debug, Clone)]
 pub struct AspectRatio(pub Option<f32>);
 
 impl AspectRatio {
-    pub fn fract(num: f32, den: f32) -> Self {
-        Self(Some(num / den))
+    pub fn fract(num: f32, den: f32) -> StyleClass {
+        StyleClass::AspectRatio(Self(Some(num / den)))
     }
 }
 
@@ -18,6 +18,6 @@ impl ApplyClass for AspectRatio {
     }
 }
 
-pub const ASPECT_AUTO: AspectRatio = AspectRatio(None);
-pub const ASPECT_SQUARE: AspectRatio = AspectRatio(Some(1.0));
-pub const ASPECT_VIDEO: AspectRatio = AspectRatio(Some(16.0 / 9.0));
+pub const ASPECT_AUTO: StyleClass = StyleClass::AspectRatio(AspectRatio(None));
+pub const ASPECT_SQUARE: StyleClass = StyleClass::AspectRatio(AspectRatio(Some(1.0)));
+pub const ASPECT_VIDEO: StyleClass = StyleClass::AspectRatio(AspectRatio(Some(16.0 / 9.0)));

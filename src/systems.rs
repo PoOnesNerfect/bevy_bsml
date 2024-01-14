@@ -1,9 +1,11 @@
 use crate::{
+    class::ApplyClass,
     map::{BackgroundColorClassMap, BorderColorClassMap, StyleClassMap, ZIndexClassMap},
-    ApplyClass, BsmlNode,
+    BsmlNode, TextClassMap,
 };
 use bevy::{
     prelude::{Changed, Entity, Query, Res, With},
+    text::Text,
     ui::{BackgroundColor, BorderColor, Interaction, Style, ZIndex},
 };
 
@@ -91,6 +93,32 @@ pub fn apply_z_index_class_system(
         (Changed<Interaction>, With<BsmlNode>),
     >,
     class_map: Res<ZIndexClassMap>,
+) {
+    let Some(class_map) = class_map.0.as_ref() else {
+        return;
+    };
+
+    for (entity, interaction, mut component) in &mut interaction_query {
+        let classes = class_map
+            .iter()
+            .find_map(|(e, c)| (*e == entity).then_some(c));
+
+        let Some(classes) = classes else {
+            continue;
+        };
+
+        for class in classes {
+            class.apply_class(*interaction, &mut component);
+        }
+    }
+}
+
+pub fn apply_text_class_system(
+    mut interaction_query: Query<
+        (Entity, &Interaction, &mut Text),
+        (Changed<Interaction>, With<BsmlNode>),
+    >,
+    class_map: Res<TextClassMap>,
 ) {
     let Some(class_map) = class_map.0.as_ref() else {
         return;
