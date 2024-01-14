@@ -84,7 +84,7 @@ macro_rules! bsml {
                 $($({
                     use $crate::bevy::hierarchy::BuildChildren;
 
-                    let child = $crate::bsml!(@spawn(self, commands, slot, entity_class_maps) ($($def)*) $({$($imp)*})?);
+                    let child = $crate::bsml!(@spawn(self, commands, slot, entity_class_maps) ($($def)+) $({$($imp)*})?);
                     commands.entity(parent).add_child(child);
                 })*)?
 
@@ -94,7 +94,7 @@ macro_rules! bsml {
             }
 
             $($(
-                $crate::bsml!(@taking_slot ($($def)*) $({$($imp)*})?);
+                $crate::bsml!(@taking_slot ($($def)+) $({$($imp)*})?);
             )*)?
         }
     };
@@ -114,15 +114,15 @@ macro_rules! bsml {
         )*)?
 
         let children = [$($(
-            $crate::bsml!(@spawn($this, $commands, $slot, $class_maps) ($($def)*) $({$($imp)*})?),
+            $crate::bsml!(@spawn($this, $commands, $slot, $class_maps) ($($def)+) $({$($imp)*})?),
         )*)?];
         $commands.entity(node).push_children(&children);
 
         node
     }};
     // handle text tag
-    (@spawn($this:ident, $commands:ident, $slot:ident, $class_maps:ident) (text $(class=[$($class:expr),* $(,)?])?) {$($token:tt)+}) => {{
-        let mut bundle = $crate::bevy::prelude::TextBundle::from_section($crate::bsml!(@stringify($this) in: [$($token)+], out: [], fields: []), $crate::bevy::text::TextStyle::default());
+    (@spawn($this:ident, $commands:ident, $slot:ident, $class_maps:ident) (text $(class=[$($class:expr),* $(,)?])?) {$($words:tt)+}) => {{
+        let mut bundle = $crate::bevy::prelude::TextBundle::from_section($crate::bsml!(@stringify($this) in: [$($words)+], out: [], fields: []), $crate::bevy::text::TextStyle::default());
 
         $($(
             $crate::apply_class_to_text_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
@@ -142,7 +142,7 @@ macro_rules! bsml {
         if $slot .is_empty() {
             let children = [
                 $($(
-                    $crate::bsml!(@spawn($this, $commands, $slot) ($($def)*) $({$($imp)*})?),
+                    $crate::bsml!(@spawn($this, $commands, $slot, $class_maps) ($($def)+) $({$($imp)*})?),
                 )*)?
             ];
             $commands.entity(parent).push_children(&children);
@@ -158,7 +158,7 @@ macro_rules! bsml {
 
         let parent = if <$itag as $crate::Bsml> :: taking_slot() {
             let children = [$($(
-                $crate::bsml!(@spawn($this, $commands, $_slot) ($($def)*) $({$($imp)*})?),
+                $crate::bsml!(@spawn($this, $commands, $_slot, $class_maps) ($($def)+) $({$($imp)*})?),
             )*)?];
 
             tag.spawn($commands, &children)
@@ -208,12 +208,11 @@ macro_rules! bsml {
         }
     };
     (@taking_slot (text) $($_:tt)?) => {};
-    (@taking_slot ($($_:tt)*)) => {};
-    (@taking_slot ($($_:tt)*) {}) => {};
-    (@taking_slot ($($_:tt)*) {$(($($def:tt)+) $($imp:tt)?)+}) => {
-        $(
-            $crate::bsml!(@taking_slot ($($def)+) $($imp)? );
-        )*
+    (@taking_slot (node $($_:tt)*) $($_1:tt)?) => {};
+    (@taking_slot ($($_:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {
+        $($(
+            $crate::bsml!(@taking_slot ($($def)+) $({$($imp)*})? );
+        )*)?
     };
     // parse string tokens with fields into format string
     (@stringify($this:ident) in: [], out: [$($out:tt)*], fields: [$($f:ident)*]) => {
