@@ -1,13 +1,17 @@
 use bevy::ecs::system::Commands;
-use bevy::prelude::{App, Camera2dBundle, Color, Component, Startup};
-use bevy::ui::BackgroundColor;
+use bevy::prelude::{App, Camera2dBundle, Component, Startup};
 use bevy::DefaultPlugins;
-use bevy_bsml::class::text::FontSize;
+use bevy_bsml::class::background_color::{BG_BLUE_400, BG_BLUE_600, BG_WHITE};
+use bevy_bsml::class::styles::flexbox_grid::align_items::ITEMS_CENTER;
+use bevy_bsml::class::styles::flexbox_grid::flex_direction::FLEX_COL;
+use bevy_bsml::class::styles::flexbox_grid::gap::gap_y;
+use bevy_bsml::class::styles::sizing::{h_px, h_vh, w_px, w_vw};
+use bevy_bsml::class::text::TEXT_BASE;
 use bevy_bsml::class::{
     hovered, pressed,
     styles::{
-        flexbox_grid::JUSTIFY_CENTER,
-        sizing::{Height, Width, H_FULL, W_FULL},
+        flexbox_grid::justify_content::JUSTIFY_CENTER,
+        sizing::{H_FULL, W_FULL},
     },
 };
 use bevy_bsml::{bsml, BsmlPlugin, SpawnBsml};
@@ -16,10 +20,12 @@ use bevy_bsml::{bsml, BsmlPlugin, SpawnBsml};
 pub struct Menu;
 
 bsml! {Menu;
-    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, BackgroundColor::DEFAULT, hovered(BackgroundColor::DEFAULT), pressed(BackgroundColor(Color::rgb(0.75, 0.75, 0.75)))]) {
-        (MenuItem i={0} name={"Continue".to_owned()}) { (text) { Hello, world! } }
-        (MenuItem i={1} name={"Setting".to_owned()})
-        (MenuItem i={2} name={"Exit".to_owned()})
+    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]) {
+        (node class=[FLEX_COL, gap_y(20.0)]) {
+            (MenuItem i={0} name={"Continue".to_owned()})
+            (MenuItem i={1} name={"Setting".to_owned()})
+            (MenuItem i={2} name={"Exit".to_owned()})
+        }
     }
 }
 
@@ -30,10 +36,10 @@ pub struct MenuItem {
 }
 
 bsml! {MenuItem;
-    (slot
-        class=[Width::px(100.0), Height::px(100.0), BackgroundColor(Color::rgb(0.65, 0.65, 0.65)), hovered(BackgroundColor(Color::rgb(0.75, 0.75, 0.75))), pressed(BackgroundColor::DEFAULT)]
+    (node
+        class=[w_px(200.0), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_600 / 0.5), JUSTIFY_CENTER, ITEMS_CENTER]
     ) {
-        (text class=[FontSize::px(12.0), hovered(FontSize::px(24.0))]) { {i}: {name} }
+        (text class=[TEXT_BASE]) { "{}: {}", i, name }
     }
 }
 
@@ -43,7 +49,6 @@ fn setup(mut commands: Commands) {
 
 fn spawn_ui(mut commands: Commands) {
     commands.spawn_bsml(Menu);
-    commands.spawn_bsml(bsml!((MenuItem i={0} name={"Continue".to_owned()})));
 }
 
 fn main() {

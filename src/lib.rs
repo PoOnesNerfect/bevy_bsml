@@ -123,7 +123,9 @@ macro_rules! bsml {
     }};
     // handle text tag
     (@spawn($this:ident, $commands:ident, $slot:ident, $class_resources:ident) (text $(class=[$($class:expr),* $(,)?])?) {$($words:tt)+}) => {{
-        let mut bundle = $crate::bevy::prelude::TextBundle::from_section($crate::bsml!(@stringify($this) in: [$($words)+], out: [], fields: []), $crate::bevy::text::TextStyle::default());
+        let mut bundle = $crate::bevy::prelude::TextBundle::from_section(
+            $crate::bsml!(@format($this) $($words)+),
+            $crate::bevy::text::TextStyle::default());
 
         $($(
             $crate::class::apply_class_to_text_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
@@ -227,13 +229,7 @@ macro_rules! bsml {
         )*)?
     };
     // parse string tokens with fields into format string
-    (@stringify($this:ident) in: [], out: [$($out:tt)*], fields: [$($f:ident)*]) => {
-        format!(stringify!($($out)*), $($this . $f),*)
-    };
-    (@stringify($this:ident) in: [{$n:ident} $($in:tt)*], out: [$($out:tt)*], fields: [$($f:ident)*]) => {
-        $crate::bsml!(@stringify($this) in: [$($in)*], out: [$($out)* {}], fields: [$($f)* $n])
-    };
-    (@stringify($this:ident) in: [$n:tt $($in:tt)*], out: [$($out:tt)*], fields: [$($f:ident)*]) => {
-        $crate::bsml!(@stringify($this) in: [$($in)*], out: [$($out)* $n], fields: [$($f)*])
+    (@format($this:ident) $str:tt $(,$f:ident)* $(,)?) => {
+        format!($str, $($this . $f),*)
     };
 }

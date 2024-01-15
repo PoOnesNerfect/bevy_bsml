@@ -35,6 +35,10 @@ impl ApplyClass for TextAlignment {
     }
 }
 
+pub const TEXT_XS: TextClass = TextClass::FontSize(FontSize(12.0));
+pub const TEXT_SM: TextClass = TextClass::FontSize(FontSize(14.0));
+pub const TEXT_BASE: TextClass = TextClass::FontSize(FontSize(16.0));
+
 #[derive(Debug, Clone, Copy)]
 pub struct FontSize(f32);
 

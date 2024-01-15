@@ -1,5 +1,8 @@
 use crate::{
-    class::{styles::StyleClass, text::TextClass, ApplyClass, InteractionClass},
+    class::{
+        background_color::BgColor, border_color::BdColor, styles::StyleClass, text::TextClass,
+        ApplyClass, InteractionClass,
+    },
     BsmlNode,
 };
 use bevy::{
@@ -19,8 +22,8 @@ impl<T> Default for ClassMap<T> {
 
 macros::impl_entity_class_maps!(
     style: Style => StyleClass,
-    background_color: BackgroundColor => BackgroundColor,
-    border_color: BorderColor => BorderColor,
+    background_color: BackgroundColor => BgColor,
+    border_color: BorderColor => BdColor,
     z_index: ZIndex => ZIndex,
     text: Text => TextClass,
 );
