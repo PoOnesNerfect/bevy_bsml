@@ -1,106 +1,106 @@
 pub use bevy;
 pub use bevy::ui::Val;
 use bevy::{
-    prelude::{App, Commands, Component, Entity, Plugin},
+    ecs::system::Command,
+    prelude::{despawn_with_children_recursive, App, Commands, Component, Entity, Plugin},
     reflect::Reflect,
 };
 
 pub mod class;
 
-mod map;
-pub use map::*;
-
-mod systems;
-use systems::{
-    apply_background_color_class_system, apply_border_color_class_system, apply_style_class_system,
-    apply_text_class_system, apply_z_index_class_system,
-};
+mod resources;
+pub use resources::*;
 
 #[derive(Debug, Clone, Copy)]
 pub struct BsmlPlugin;
 
 impl Plugin for BsmlPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<StyleClassMap>();
-        app.init_resource::<BackgroundColorClassMap>();
-        app.init_resource::<BorderColorClassMap>();
-        app.init_resource::<ZIndexClassMap>();
-        app.init_resource::<TextClassMap>();
+        EntityClassResources::build_app(app);
+    }
 
-        app.add_systems(bevy::prelude::Update, apply_style_class_system);
-        app.add_systems(bevy::prelude::Update, apply_border_color_class_system);
-        app.add_systems(bevy::prelude::Update, apply_background_color_class_system);
-        app.add_systems(bevy::prelude::Update, apply_z_index_class_system);
-        app.add_systems(bevy::prelude::Update, apply_text_class_system);
+    fn is_unique(&self) -> bool {
+        true
     }
 }
 
-pub trait BsmlCommand {
+pub trait SpawnBsml {
     fn spawn_bsml<T: Bsml>(&mut self, node: T) -> Entity;
+    fn despawn_bsml(&mut self, entity: Entity);
 }
-impl<'w, 's> BsmlCommand for bevy::ecs::system::Commands<'w, 's> {
+impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
     fn spawn_bsml<T: Bsml>(&mut self, node: T) -> Entity {
-        node.spawn(self, &[])
+        let (entity, class_resources) = node.spawn(self, &[]);
+
+        struct BsmlCommand(EntityClassResources);
+
+        impl Command for BsmlCommand {
+            fn apply(self, world: &mut bevy::prelude::World) {
+                self.0.extend_resources(world);
+            }
+        }
+
+        self.add(BsmlCommand(class_resources));
+
+        entity
+    }
+
+    fn despawn_bsml(&mut self, entity: Entity) {
+        struct BsmlCommand(Entity);
+
+        impl Command for BsmlCommand {
+            fn apply(self, world: &mut bevy::prelude::World) {
+                remove_node_from_class_resources(world, self.0);
+                despawn_with_children_recursive(world, self.0);
+            }
+        }
+
+        self.add(BsmlCommand(entity));
     }
 }
 
 pub trait Bsml {
-    fn spawn(&self, commands: &mut Commands, slot: &[Entity]) -> Entity;
+    fn spawn(self, commands: &mut Commands, slot: &[Entity]) -> (Entity, EntityClassResources);
 
     fn taking_slot() -> bool {
         false
     }
 }
 
+/// Marker component for bsml node
 #[derive(Debug, Clone, Component, Reflect)]
 pub struct BsmlNode;
 
 #[macro_export]
 macro_rules! bsml {
-    (($tag:ident $({$f:ident : $t:ty $(, $f2:ident : $t2: ty)* $(,)?})* $(class=[$($class:expr),* $(,)?])?) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {
-        $crate::bsml!(@struct_def $tag {$($f : $t $(, $f2 : $t2)*),*});
-
+    (($itag:ident $($attr:tt)*) $({$($content:tt)*})?) => {{
+        #[derive($crate::bevy::prelude::Component, Clone, Copy)]
+        pub struct __BsmlTag;
+        $crate::bsml!(__BsmlTag; ($itag $($attr)*) $({$($content)*})?);
+        __BsmlTag
+    }};
+    ($tag:ident; ($itag:ident $($attr:tt)*) $({$($content:tt)*})?) => {
         impl $crate::Bsml for $tag {
             #[allow(unused_variables)]
-            fn spawn(&self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> $crate::bevy::ecs::entity::Entity {
+            fn spawn(self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> ($crate::bevy::ecs::entity::Entity, $crate::EntityClassResources) {
                 #[allow(unused_imports)]
-                use $crate::{class::ApplyClass, InsertEntityClassMaps};
+                use $crate::{class::ApplyClass, InsertEntityClassResource};
+                use $crate::bevy::hierarchy::BuildChildren;
 
                 #[allow(unused_mut)]
-                let mut bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
+                let mut entity_class_resources = $crate::EntityClassResources::default();
 
-                $($(
-                    $crate::class::apply_class_to_node_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
-                )*)?
+                let entity = $crate::bsml!(@spawn(self, commands, slot, entity_class_resources) ($itag $($attr)*) $({$($content)*})?);
+                commands.entity(entity).insert(self);
 
-                let parent = commands.spawn((self.clone(), bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
-
-                #[allow(unused_mut)]
-                let mut entity_class_maps = $crate::EntityClassMaps::default();
-
-                $($(
-                    $class .insert_entity_class_maps(parent, &mut entity_class_maps);
-                )*)?
-
-                $($({
-                    use $crate::bevy::hierarchy::BuildChildren;
-
-                    let child = $crate::bsml!(@spawn(self, commands, slot, entity_class_maps) ($($def)+) $({$($imp)*})?);
-                    commands.entity(parent).add_child(child);
-                })*)?
-
-                entity_class_maps.sync_resources(commands);
-
-                parent
+                (entity, entity_class_resources)
             }
 
-            $($(
-                $crate::bsml!(@taking_slot ($($def)+) $({$($imp)*})?);
-            )*)?
+            $crate::bsml!(@taking_slot ($itag) $({$($content)*})?);
         }
     };
     // handle node tag
-    (@spawn($this:ident, $commands:ident, $slot:ident, $class_maps:ident) (node $(class=[$($class:expr),* $(,)?])?) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
+    (@spawn($this:ident, $commands:ident, $slot:ident, $class_resources:ident) (node $(class=[$($class:expr),* $(,)?])?) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         #[allow(unused_mut)]
         let mut bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
@@ -111,18 +111,18 @@ macro_rules! bsml {
         let node = $commands.spawn((bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
 
         $($(
-            $class .insert_entity_class_maps(node, &mut $class_maps);
+            $class .insert_entity_class_resource(node, &mut $class_resources);
         )*)?
 
         let children = [$($(
-            $crate::bsml!(@spawn($this, $commands, $slot, $class_maps) ($($def)+) $({$($imp)*})?),
+            $crate::bsml!(@spawn($this, $commands, $slot, $class_resources) ($($def)+) $({$($imp)*})?),
         )*)?];
         $commands.entity(node).push_children(&children);
 
         node
     }};
     // handle text tag
-    (@spawn($this:ident, $commands:ident, $slot:ident, $class_maps:ident) (text $(class=[$($class:expr),* $(,)?])?) {$($words:tt)+}) => {{
+    (@spawn($this:ident, $commands:ident, $slot:ident, $class_resources:ident) (text $(class=[$($class:expr),* $(,)?])?) {$($words:tt)+}) => {{
         let mut bundle = $crate::bevy::prelude::TextBundle::from_section($crate::bsml!(@stringify($this) in: [$($words)+], out: [], fields: []), $crate::bevy::text::TextStyle::default());
 
         $($(
@@ -132,22 +132,26 @@ macro_rules! bsml {
         let id = $commands.spawn((bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
 
         $($(
-            $class .insert_entity_class_maps(id, &mut $class_maps);
+            $class .insert_entity_class_resource(id, &mut $class_resources);
         )*)?
 
         id
     }};
     // handle slot tag
-    (@spawn($this:ident, $commands:ident, $slot:ident, $class_maps:ident) (slot) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
+    (@spawn($this:ident, $commands:ident, $slot:ident, $class_resources:ident) (slot $(class=[$($class:expr),* $(,)?])?) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         #[allow(unused_mut)]
         let mut bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
+
+        $($(
+            $crate::class::apply_class_to_node_bundle(&mut bundle, $crate::bevy::ui::Interaction::None, $class);
+        )*)?
 
         let parent = $commands.spawn((bundle, $crate::bevy::ui::Interaction::None, $crate::BsmlNode)).id();
 
         if $slot .is_empty() {
             let children = [
                 $($(
-                    $crate::bsml!(@spawn($this, $commands, $slot, $class_maps) ($($def)+) $({$($imp)*})?),
+                    $crate::bsml!(@spawn($this, $commands, $slot, $class_resources) ($($def)+) $({$($imp)*})?),
                 )*)?
             ];
             $commands.entity(parent).push_children(&children);
@@ -155,29 +159,32 @@ macro_rules! bsml {
             $commands.entity(parent).push_children(&$slot);
         }
 
+        $($(
+            $class .insert_entity_class_resource(parent, &mut $class_resources);
+        )*)?
+
         parent
     }};
     // handle custom component
-    (@spawn($this:ident, $commands:ident, $_slot:ident, $class_maps:ident) ($itag:ident $($attr:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
+    (@spawn($this:ident, $commands:ident, $_slot:ident, $class_resources:ident) ($itag:ident $($attr:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         let tag = $crate::bsml!(@tag($this, $itag) in:[$($attr)*] fields:[]);
 
-        let parent = if <$itag as $crate::Bsml> :: taking_slot() {
+        let (parent, tag_class_resources) = if <$itag as $crate::Bsml> :: taking_slot() {
             let children = [$($(
-                $crate::bsml!(@spawn($this, $commands, $_slot, $class_maps) ($($def)+) $({$($imp)*})?),
+                $crate::bsml!(@spawn($this, $commands, $_slot, $class_resources) ($($def)+) $({$($imp)*})?),
             )*)?];
 
             tag.spawn($commands, &children)
         } else {
+
             tag.spawn($commands, &[])
         };
 
+        $class_resources.extend(tag_class_resources);
 
         parent
     }};
     // parse attribute tokens into fields, and populate to initialize component
-    (@tag($this:ident, $tag:ident) in:[] fields:[] ) => {
-        $tag
-    };
     (@tag($this:ident, $tag:ident) in:[] fields:[$(($f:ident : $v:expr)),*] ) => {
         $tag { $($f: $v),* }
     };
@@ -207,7 +214,7 @@ macro_rules! bsml {
         }
     };
     // impl taking_slot (slot) exists
-    (@taking_slot (slot) $($_:tt)?) => {
+    (@taking_slot (slot $($_:tt)*) $($_1:tt)?) => {
         fn taking_slot() -> bool {
             true
         }

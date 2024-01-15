@@ -1,5 +1,6 @@
 use super::ApplyClass;
 use bevy::{
+    prelude::Color,
     text::{Text, TextAlignment},
     ui::Interaction,
 };
@@ -9,6 +10,7 @@ use derive_more::From;
 pub enum TextClass {
     FontSize(FontSize),
     TextAlignment(TextAlignment),
+    TextColor(TextColor),
 }
 
 impl ApplyClass for TextClass {
@@ -20,6 +22,7 @@ impl ApplyClass for TextClass {
             Self::TextAlignment(text_alignment) => {
                 text_alignment.apply_class(interaction, component)
             }
+            Self::TextColor(text_color) => text_color.apply_class(interaction, component),
         }
     }
 }
@@ -46,5 +49,16 @@ impl ApplyClass for FontSize {
 
     fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
         component.sections[0].style.font_size = self.0;
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct TextColor(Color);
+
+impl ApplyClass for TextColor {
+    type Component = Text;
+
+    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+        component.sections[0].style.color = self.0;
     }
 }
