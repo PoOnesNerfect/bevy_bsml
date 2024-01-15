@@ -1,11 +1,11 @@
 use bevy::ecs::system::Commands;
 use bevy::prelude::{App, Camera2dBundle, Component, Startup};
 use bevy::DefaultPlugins;
-use bevy_bsml::class::background_color::{BG_BLUE_400, BG_BLUE_600, BG_WHITE};
+use bevy_bsml::class::background_color::{BG_BLUE_400, BG_BLUE_600, BG_BLUE_800, BG_WHITE};
 use bevy_bsml::class::styles::flexbox_grid::align_items::ITEMS_CENTER;
 use bevy_bsml::class::styles::flexbox_grid::flex_direction::FLEX_COL;
 use bevy_bsml::class::styles::flexbox_grid::gap::gap_y;
-use bevy_bsml::class::styles::sizing::{h_px, h_vh, w_px, w_vw};
+use bevy_bsml::class::styles::sizing::{h_px, w_px};
 use bevy_bsml::class::text::TEXT_BASE;
 use bevy_bsml::class::{
     hovered, pressed,
@@ -36,19 +36,22 @@ pub struct MenuItem {
 }
 
 bsml! {MenuItem;
-    (node
-        class=[w_px(200.0), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_600 / 0.5), JUSTIFY_CENTER, ITEMS_CENTER]
+    (slot
+        class=[w_px(200.0), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800), JUSTIFY_CENTER, ITEMS_CENTER]
     ) {
         (text class=[TEXT_BASE]) { "{}: {}", i, name }
     }
 }
 
-fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+fn spawn_ui(mut commands: Commands) {
+    commands.spawn_bsml(Menu); // spawn component
+    commands.spawn_bsml(bsml!(
+        (MenuItem i={3} name={"Replaced".to_owned()}) { (text class=[TEXT_BASE]) { "Hello world" } }
+    )); // spawn UI directly
 }
 
-fn spawn_ui(mut commands: Commands) {
-    commands.spawn_bsml(Menu);
+fn setup(mut commands: Commands) {
+    commands.spawn(Camera2dBundle::default());
 }
 
 fn main() {
