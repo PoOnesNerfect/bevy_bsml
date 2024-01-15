@@ -8,7 +8,6 @@ use bevy::{
     ui::{BackgroundColor, BorderColor, Interaction, Style, ZIndex},
 };
 
-#[doc(hidden)]
 #[derive(Debug, Clone, Resource)]
 pub struct ClassMap<T>(pub Option<Vec<(Entity, Vec<InteractionClass<T>>)>>);
 
@@ -28,7 +27,6 @@ macros::impl_entity_class_maps!(
 mod macros {
     macro_rules! impl_entity_class_maps {
     ($($f:ident : $c:ty => $t:ty),* $(,)?) => {
-        #[doc(hidden)]
         #[derive(Debug, Default, Clone)]
         pub struct EntityClassResources {
             $(pub $f: ClassMap<$t>,)*
@@ -117,7 +115,6 @@ mod macros {
             }
         }
 
-        #[doc(hidden)]
         pub fn remove_node_from_class_resources(world: &mut World, entity: Entity) {
             let mut entities = vec![entity];
             collect_nested_children(world, entity, &mut entities);
@@ -146,7 +143,6 @@ mod macros {
             });
         }
 
-        #[doc(hidden)]
         pub trait InsertEntityClassResource<T: Component> {
             fn insert_entity_class_resource(self, entity: Entity, class_map: &mut EntityClassResources);
         }

@@ -5,11 +5,10 @@ use bevy::{
     prelude::{despawn_with_children_recursive, App, Commands, Component, Entity, Plugin},
     reflect::Reflect,
 };
+use resources::EntityClassResources;
 
 pub mod class;
-
-mod resources;
-pub use resources::*;
+pub mod resources;
 
 #[derive(Debug, Clone, Copy)]
 pub struct BsmlPlugin;
@@ -28,6 +27,7 @@ pub trait SpawnBsml {
     fn spawn_bsml<T: Bsml>(&mut self, node: T) -> Entity;
     fn despawn_bsml(&mut self, entity: Entity);
 }
+
 impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
     fn spawn_bsml<T: Bsml>(&mut self, node: T) -> Entity {
         let (entity, class_resources) = node.spawn(self, &[]);
@@ -50,7 +50,7 @@ impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
 
         impl Command for BsmlCommand {
             fn apply(self, world: &mut bevy::prelude::World) {
-                remove_node_from_class_resources(world, self.0);
+                resources::remove_node_from_class_resources(world, self.0);
                 despawn_with_children_recursive(world, self.0);
             }
         }
@@ -82,18 +82,18 @@ macro_rules! bsml {
     ($tag:ident; ($itag:ident $($attr:tt)*) $({$($content:tt)*})?) => {
         impl $crate::Bsml for $tag {
             #[allow(unused_variables)]
-            fn spawn(self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> ($crate::bevy::ecs::entity::Entity, $crate::EntityClassResources) {
+            fn spawn(self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> ($crate::bevy::ecs::entity::Entity, $crate::resources::EntityClassResources) {
                 #[allow(unused_imports)]
-                use $crate::{class::ApplyClass, InsertEntityClassResource};
+                use $crate::{class::ApplyClass, resources::InsertEntityClassResource};
                 use $crate::bevy::hierarchy::BuildChildren;
 
                 #[allow(unused_mut)]
-                let mut entity_class_resources = $crate::EntityClassResources::default();
+                let mut class_resources = $crate::resources::EntityClassResources::default();
 
-                let entity = $crate::bsml!(@spawn(self, commands, slot, entity_class_resources) ($itag $($attr)*) $({$($content)*})?);
+                let entity = $crate::bsml!(@spawn(self, commands, slot, class_resources) ($itag $($attr)*) $({$($content)*})?);
                 commands.entity(entity).insert(self);
 
-                (entity, entity_class_resources)
+                (entity, class_resources)
             }
 
             $crate::bsml!(@taking_slot ($itag) $({$($content)*})?);
