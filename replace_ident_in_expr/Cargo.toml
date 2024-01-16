@@ -1,0 +1,18 @@
+[package]
+name = "replace_ident_in_expr"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jack Lee <jack.y.l.dev@gmail.com>"]
+description = "Replaces target ident with given ident in an expr"
+documentation = "https://docs.rs/replace_ident_in_expr"
+repository = "https://github.com/poonesnerfect/bevy_bsml"
+license = "MIT OR Apache-2.0"
+rust-version = "1.56"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+
