@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "replace_ident_in_expr"
-version = "0.1.0"
+name = "replace_ident"
+version = "0.1.1"

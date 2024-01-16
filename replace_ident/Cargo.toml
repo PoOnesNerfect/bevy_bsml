@@ -1,9 +1,9 @@
 [package]
 name = "replace_ident"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Jack Lee <jack.y.l.dev@gmail.com>"]
-description = "Replaces target ident with given ident in an expr"
+description = "Replaces target ident with given ident in a token stream"
 documentation = "https://docs.rs/replace_ident"
 repository = "https://github.com/poonesnerfect/bevy_bsml"
 license = "MIT OR Apache-2.0"
