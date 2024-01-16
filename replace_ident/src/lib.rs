@@ -21,7 +21,7 @@ extern crate proc_macro;
 use proc_macro::{token_stream, Group, Ident, TokenStream, TokenTree};
 
 #[proc_macro]
-pub fn replace_ident_in_expr(input: TokenStream) -> TokenStream {
+pub fn replace_ident(input: TokenStream) -> TokenStream {
     let mut it = input.into_iter();
 
     // Get first parameters
@@ -31,10 +31,10 @@ pub fn replace_ident_in_expr(input: TokenStream) -> TokenStream {
     let _comma = it.next().unwrap();
 
     // Return the remaining tokens, but replace identifiers.
-    replace_ident(target, replace, it)
+    replace_ident2(target, replace, it)
 }
 
-fn replace_ident(target: Ident, replace: Ident, input: token_stream::IntoIter) -> TokenStream {
+fn replace_ident2(target: Ident, replace: Ident, input: token_stream::IntoIter) -> TokenStream {
     // Return the remaining tokens, but replace identifiers.
     input
         .map(|tt| {
@@ -48,7 +48,7 @@ fn replace_ident(target: Ident, replace: Ident, input: token_stream::IntoIter) -
                 }
                 TokenTree::Group(group) => TokenTree::Group(Group::new(
                     group.delimiter(),
-                    replace_ident(target.clone(), replace.clone(), group.stream().into_iter()),
+                    replace_ident2(target.clone(), replace.clone(), group.stream().into_iter()),
                 )),
                 // All other tokens are just forwarded
                 other => other,

@@ -1,10 +1,10 @@
 [package]
-name = "replace_ident_in_expr"
+name = "replace_ident"
 version = "0.1.0"
 edition = "2021"
 authors = ["Jack Lee <jack.y.l.dev@gmail.com>"]
 description = "Replaces target ident with given ident in an expr"
-documentation = "https://docs.rs/replace_ident_in_expr"
+documentation = "https://docs.rs/replace_ident"
 repository = "https://github.com/poonesnerfect/bevy_bsml"
 license = "MIT OR Apache-2.0"
 rust-version = "1.56"
