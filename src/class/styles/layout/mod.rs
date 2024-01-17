@@ -1,5 +1,5 @@
 use super::{ApplyClass, StyleClass};
-use bevy::ui::{Interaction, Style};
+use bevy::ui::Style;
 
 #[derive(Debug, Clone)]
 pub struct AspectRatio(pub Option<f32>);
@@ -13,7 +13,7 @@ impl AspectRatio {
 impl ApplyClass for AspectRatio {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.aspect_ratio = self.0;
     }
 }

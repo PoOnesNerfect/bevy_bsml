@@ -1,5 +1,5 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{Interaction, Style, Val};
+use bevy::ui::{Style, Val};
 
 pub fn gap(px: f32) -> StyleClass {
     StyleClass::Gap(Gap(Val::Px(px)))
@@ -19,7 +19,7 @@ pub struct Gap(Val);
 impl ApplyClass for Gap {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.row_gap = self.0;
         component.column_gap = self.0;
     }
@@ -31,7 +31,7 @@ pub struct RowGap(Val);
 impl ApplyClass for RowGap {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.row_gap = self.0;
     }
 }
@@ -42,7 +42,7 @@ pub struct ColGap(Val);
 impl ApplyClass for ColGap {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.column_gap = self.0;
     }
 }

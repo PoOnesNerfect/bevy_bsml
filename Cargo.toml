@@ -14,3 +14,4 @@ rust-version = "1.56"
 [dependencies]
 bevy = { version = "0.12" }
 derive_more = "0.99.17"
+replace_ident = { version = "0.1.1", path="replace_ident" }

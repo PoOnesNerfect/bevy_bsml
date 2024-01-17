@@ -1,5 +1,5 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{FlexDirection, Interaction, Style};
+use bevy::ui::{FlexDirection, Style};
 
 pub const FLEX_ROW: StyleClass = StyleClass::FlexDirection(FlexDirection::Row);
 pub const FLEX_COL: StyleClass = StyleClass::FlexDirection(FlexDirection::Column);
@@ -9,7 +9,7 @@ pub const FLEX_COL_REVERSE: StyleClass = StyleClass::FlexDirection(FlexDirection
 impl ApplyClass for FlexDirection {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.flex_direction = *self;
     }
 }

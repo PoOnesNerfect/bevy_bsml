@@ -8,44 +8,69 @@
 
 bevy_bsml is very much inspired by svelte and tailwindcss. So, if you're a web dev, you may feel right at home, with components and inline styling.
 
-First, I will show an example of creating a UI component and displaying it on screen, then, I will explain the rules of bsml (a.k.a. BS Markup Language).
-
 ## Basic Usage
 
 ```rust
-// define bevy component
 #[derive(Debug, Clone, Component)]
-pub struct MenuItem {
-    pub i: u8,
-    pub name: String,
+pub struct Menu {
+    pub items: &'static [&'static str],
 }
 
-// define UI component for MenuItem
+bsml! {Menu;
+    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+        (for {i, name in self.items} class=[FLEX_COL, gap_y(20.0)]) {
+            (MenuItem i name ..default)
+        }
+    }
+}
+
+#[derive(Debug, Clone, Component)]
+pub struct MenuItem {
+    pub i: usize,
+    pub name: &'static str,
+    pub width: f32,
+}
+
+impl Default for MenuItem {
+    fn default() -> Self {
+        Self {
+            i: 0,
+            name: "Menu Item",
+            width: 200.0,
+        }
+    }
+}
+
 bsml! {MenuItem;
-    (node
-        class=[w_px(200.0), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), JUSTIFY_CENTER, ITEMS_CENTER]
+    (slot
+        class=[w_px(self.width), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800), JUSTIFY_CENTER, ITEMS_CENTER]
     ) {
-        (text class=[TEXT_BASE]) { "{}: {}", i, name }
+        (text class=[TEXT_BASE]) { "{}", self.name }
+    }
+}
+
+fn menu_item_system(
+    query: Query<(&Interaction, &MenuItem), Changed<Interaction>>,
+    mut exit: EventWriter<AppExit>,
+) {
+    for (interaction, item) in query.iter() {
+        if *interaction == Interaction::Pressed {
+            println!("Pressed: {}", item.name);
+
+            if item.name == "Exit" {
+                println!("exiting game...");
+                exit.send(AppExit);
+            }
+        }
     }
 }
 
 fn spawn_ui(mut commands: Commands) {
-    // you can spawn initialized component
-    commands.spawn_bsml(MenuItem { i: 123, name: "hello world".to_owned() });
-
-    // or, you can spawn ui directly
-    commands.spawn_bsml(bsml!(
-        (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]) {
-            (node class=[FLEX_COL, gap_y(20.0)]) {
-                (MenuItem i={0} name={"Continue".to_owned()})
-                (MenuItem i={1} name={"Setting".to_owned()})
-                (MenuItem i={2} name={"Exit".to_owned()})
-            }
-        }
-    ));
+    commands.spawn_bsml(Menu {
+        items: &["Continue", "Setting", "Exit"],
+    });
 }
 
-// spawn camera bundle
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
@@ -56,6 +81,8 @@ fn main() {
         .add_plugins(BsmlPlugin)
         .add_systems(Startup, setup)
         .add_systems(Startup, spawn_ui)
+        .add_systems(Update, menu_item_system)
+        .add_systems(Update, bevy::window::close_on_esc)
         .run();
 }
 ```

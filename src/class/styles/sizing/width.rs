@@ -1,5 +1,5 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{Interaction, Style, Val};
+use bevy::ui::{Style, Val};
 
 pub const W_AUTO: StyleClass = StyleClass::Width(Width(Val::Auto));
 pub const W_FULL: StyleClass = StyleClass::Width(Width(Val::Percent(100.0)));
@@ -37,7 +37,7 @@ pub struct Width(pub Val);
 impl ApplyClass for Width {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.width = self.0;
     }
 }

@@ -5,9 +5,7 @@ use self::{
     sizing::{Height, MinWidth, Width},
 };
 use crate::class::ApplyClass;
-use bevy::ui::{
-    AlignContent, AlignItems, FlexDirection, FlexWrap, Interaction, JustifyContent, Style,
-};
+use bevy::ui::{AlignContent, AlignItems, FlexDirection, FlexWrap, JustifyContent, Style};
 use derive_more::From;
 
 pub mod flexbox_grid;
@@ -40,9 +38,9 @@ mod macros {
             impl ApplyClass for StyleClass {
                 type Component = Style;
 
-                fn apply_class(&self, interaction: Interaction, component: &mut Self::Component) {
+                fn apply_class(&self, component: &mut Self::Component) {
                     match self {
-                        $(Self::$f(val) => val.apply_class(interaction, component)),*
+                        $(Self::$f(val) => val.apply_class(component)),*
                     }
                 }
             }

@@ -1,53 +1,68 @@
+use bevy::app::AppExit;
 use bevy::ecs::system::Commands;
-use bevy::prelude::{App, Camera2dBundle, Component, Startup};
+use bevy::prelude::{App, Camera2dBundle, Changed, Component, EventWriter, Query, Startup, Update};
+use bevy::ui::Interaction;
 use bevy::DefaultPlugins;
-use bevy_bsml::class::background_color::{BG_BLUE_400, BG_BLUE_600, BG_BLUE_800, BG_WHITE};
-use bevy_bsml::class::styles::flexbox_grid::align_items::ITEMS_CENTER;
-use bevy_bsml::class::styles::flexbox_grid::flex_direction::FLEX_COL;
-use bevy_bsml::class::styles::flexbox_grid::gap::gap_y;
-use bevy_bsml::class::styles::sizing::{h_px, w_px};
-use bevy_bsml::class::text::TEXT_BASE;
-use bevy_bsml::class::{
-    hovered, pressed,
-    styles::{
-        flexbox_grid::justify_content::JUSTIFY_CENTER,
-        sizing::{H_FULL, W_FULL},
-    },
-};
-use bevy_bsml::{bsml, BsmlPlugin, SpawnBsml};
+use bevy_bsml::prelude::*;
 
 #[derive(Debug, Clone, Component)]
-pub struct Menu;
+pub struct Menu {
+    pub items: &'static [&'static str],
+}
 
 bsml! {Menu;
-    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]) {
-        (node class=[FLEX_COL, gap_y(20.0)]) {
-            (MenuItem i={0} name={"Continue".to_owned()})
-            (MenuItem i={1} name={"Setting".to_owned()})
-            (MenuItem i={2} name={"Exit".to_owned()})
+    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+        (for {i, name in self.items} class=[FLEX_COL, gap_y(20.0)]) {
+            (MenuItem i name ..default)
         }
     }
 }
 
 #[derive(Debug, Clone, Component)]
 pub struct MenuItem {
-    pub i: u8,
-    pub name: String,
+    pub i: usize,
+    pub name: &'static str,
+    pub width: f32,
+}
+
+impl Default for MenuItem {
+    fn default() -> Self {
+        Self {
+            i: 0,
+            name: "Menu Item",
+            width: 200.0,
+        }
+    }
 }
 
 bsml! {MenuItem;
     (slot
-        class=[w_px(200.0), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800), JUSTIFY_CENTER, ITEMS_CENTER]
+        class=[w_px(self.width), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800), JUSTIFY_CENTER, ITEMS_CENTER]
     ) {
-        (text class=[TEXT_BASE]) { "{}: {}", i, name }
+        (text class=[TEXT_BASE]) { "{}", self.name }
+    }
+}
+
+fn menu_item_system(
+    query: Query<(&Interaction, &MenuItem), Changed<Interaction>>,
+    mut exit: EventWriter<AppExit>,
+) {
+    for (interaction, item) in query.iter() {
+        if *interaction == Interaction::Pressed {
+            println!("Pressed: {}", item.name);
+
+            if item.name == "Exit" {
+                println!("exiting game...");
+                exit.send(AppExit);
+            }
+        }
     }
 }
 
 fn spawn_ui(mut commands: Commands) {
-    commands.spawn_bsml(Menu); // spawn component
-    commands.spawn_bsml(bsml!(
-        (MenuItem i={3} name={"Replaced".to_owned()}) { (text class=[TEXT_BASE]) { "Hello world" } }
-    )); // spawn UI directly
+    commands.spawn_bsml(Menu {
+        items: &["Continue", "Setting", "Exit"],
+    });
 }
 
 fn setup(mut commands: Commands) {
@@ -60,5 +75,7 @@ fn main() {
         .add_plugins(BsmlPlugin)
         .add_systems(Startup, setup)
         .add_systems(Startup, spawn_ui)
+        .add_systems(Update, menu_item_system)
+        .add_systems(Update, bevy::window::close_on_esc)
         .run();
 }

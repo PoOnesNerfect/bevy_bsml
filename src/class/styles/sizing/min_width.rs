@@ -1,5 +1,5 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{Interaction, Style, Val};
+use bevy::ui::{Style, Val};
 
 pub const MIN_W_AUTO: StyleClass = StyleClass::MinWidth(MinWidth(Val::Auto));
 pub const MIN_W_FULL: StyleClass = StyleClass::MinWidth(MinWidth(Val::Percent(100.0)));
@@ -37,7 +37,7 @@ pub struct MinWidth(pub Val);
 impl ApplyClass for MinWidth {
     type Component = Style;
 
-    fn apply_class(&self, _: Interaction, component: &mut Self::Component) {
+    fn apply_class(&self, component: &mut Self::Component) {
         component.min_width = self.0;
     }
 }
