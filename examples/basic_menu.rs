@@ -49,7 +49,7 @@ bsml! {MenuItem;
 // handle interactions with menu items
 fn menu_item_system(
     query: Query<(Entity, &Interaction, &MenuItem), Changed<Interaction>>,
-    mut classes: Query<&mut ClassList<BackgroundColorClass>>,
+    mut classes: Query<&mut BackgroundColorClassList>,
     mut exit: EventWriter<AppExit>,
 ) {
     for (entity, interaction, item) in query.iter() {

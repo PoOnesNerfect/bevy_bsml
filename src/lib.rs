@@ -1,21 +1,20 @@
 use bevy::{
-    ecs::system::Command,
+    ecs::system::{Command, EntityCommands},
     prelude::{despawn_with_children_recursive, App, Commands, Component, Entity, Plugin},
     reflect::Reflect,
 };
+use class_list::ClassListMap;
 
 pub use bevy;
-
 // used for solving hygiene issue when trying to access `self` in macro rules
 #[doc(hidden)]
 pub use replace_ident::replace_ident;
 
 pub mod class;
-mod class_list;
-pub use class_list::ClassList;
-
-#[doc(hidden)]
-pub use class_list::ClassListMap;
+pub mod class_list;
+pub use class_list::{
+    BackgroundColorClassList, BorderColorClassList, StyleClassList, TextClassList, ZIndexClassList,
+};
 
 /// Contains all the items needed to use Bsml
 pub mod prelude {
@@ -26,7 +25,8 @@ pub mod prelude {
             flexbox_grid::flex_direction::*, flexbox_grid::flex_wrap::*, flexbox_grid::gap::*,
             flexbox_grid::justify_content::*, hovered, pressed, sizing::*, text::*, z_index::*,
         },
-        BsmlPlugin, ClassList, SpawnBsml,
+        class_list::*,
+        BsmlPlugin, SpawnBsml,
     };
 }
 
@@ -43,14 +43,15 @@ impl Plugin for BsmlPlugin {
     }
 }
 
-pub trait SpawnBsml {
-    fn spawn_bsml<T: Bsml>(&mut self, node: T) -> Entity;
+pub trait SpawnBsml<'w, 's> {
+    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'w, 's, 'a>;
     fn despawn_bsml(&mut self, entity: Entity);
 }
 
-impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
-    fn spawn_bsml<T: Bsml>(&mut self, node: T) -> Entity {
-        node.spawn(self, &[])
+impl<'w, 's> SpawnBsml<'w, 's> for bevy::ecs::system::Commands<'w, 's> {
+    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'w, 's, 'a> {
+        let entity = node.spawn(self, &[]);
+        self.entity(entity)
     }
 
     fn despawn_bsml(&mut self, entity: Entity) {
@@ -110,7 +111,7 @@ macro_rules! bsml {
         let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
         #[allow(unused_mut)]
-        let mut __class_map = $crate::ClassListMap::default();
+        let mut __class_map = $crate::class_list::ClassListMap::default();
 
         $({
             use $crate::class::WithInteraction;
@@ -143,7 +144,7 @@ macro_rules! bsml {
         let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
         #[allow(unused_mut)]
-        let mut __class_map = $crate::ClassListMap::default();
+        let mut __class_map = $crate::class_list::ClassListMap::default();
 
         $({
             use $crate::class::WithInteraction;
@@ -178,7 +179,7 @@ macro_rules! bsml {
         let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
         #[allow(unused_mut)]
-        let mut __class_map = $crate::ClassListMap::default();
+        let mut __class_map = $crate::class_list::ClassListMap::default();
 
         $({
             use $crate::class::WithInteraction;
@@ -214,7 +215,7 @@ macro_rules! bsml {
             $crate::bevy::text::TextStyle::default());
 
         #[allow(unused_mut)]
-        let mut __class_map = $crate::ClassListMap::default();
+        let mut __class_map = $crate::class_list::ClassListMap::default();
 
         $({
             use $crate::class::WithInteraction;
@@ -241,7 +242,7 @@ macro_rules! bsml {
         let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
 
         #[allow(unused_mut)]
-        let mut __class_map = $crate::ClassListMap::default();
+        let mut __class_map = $crate::class_list::ClassListMap::default();
 
         $({
             use $crate::class::WithInteraction;

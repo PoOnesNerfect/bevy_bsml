@@ -3,7 +3,6 @@ use bevy::prelude::{App, Camera2dBundle, Component, Query, Res, Startup, Update}
 use bevy::time::{Time, Timer, TimerMode};
 use bevy::ui::Interaction;
 use bevy::DefaultPlugins;
-use bevy_bsml::class::StyleClass;
 use bevy_bsml::prelude::*;
 use std::time::Duration;
 
@@ -34,10 +33,7 @@ pub struct Loaded {
 
 bsml! {Loaded; (node class=[w_perc(0.0), H_FULL, BG_BLUE_400]) }
 
-fn loading_bar_system(
-    mut query: Query<(&mut Loaded, &mut ClassList<StyleClass>)>,
-    time: Res<Time>,
-) {
+fn loading_bar_system(mut query: Query<(&mut Loaded, &mut StyleClassList)>, time: Res<Time>) {
     let (mut loaded, mut classes) = query.single_mut();
     loaded.timer.tick(time.delta());
 

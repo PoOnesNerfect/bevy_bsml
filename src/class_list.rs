@@ -16,6 +16,12 @@ use bevy::{
 #[derive(Debug, Clone, Component)]
 pub struct ClassList<T>(Vec<(Interaction, T)>);
 
+pub type StyleClassList = ClassList<StyleClass>;
+pub type BackgroundColorClassList = ClassList<BackgroundColorClass>;
+pub type BorderColorClassList = ClassList<BorderColorClass>;
+pub type ZIndexClassList = ClassList<ZIndex>;
+pub type TextClassList = ClassList<TextClass>;
+
 impl<T> ClassList<T> {
     pub fn set<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
         let class = class.into();
@@ -30,6 +36,15 @@ impl<T> ClassList<T> {
         }
 
         self.0.push((interaction, class));
+    }
+
+    pub fn unset<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
+        let class = class.into();
+
+        let variant_eq = |a: &T, b: &T| std::mem::discriminant(&a) == std::mem::discriminant(&b);
+
+        self.0
+            .retain(|(i, c)| *i != interaction || !variant_eq(c, &class));
     }
 }
 
