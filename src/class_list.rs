@@ -6,12 +6,32 @@ use crate::{
     BsmlNode,
 };
 use bevy::{
-    prelude::{App, Changed, Commands, Component, Entity, Query, With},
+    prelude::{App, Changed, Commands, Component, Entity, Or, Query, With},
     ui::{Interaction, ZIndex},
 };
 
+/// Bevy component: list of classes that apply the styles to UI Node.
+///
+/// You can access this component in your system to change styles of a node.
 #[derive(Debug, Clone, Component)]
 pub struct ClassList<T>(Vec<(Interaction, T)>);
+
+impl<T> ClassList<T> {
+    pub fn upsert<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
+        let class = class.into();
+
+        let variant_eq = |a: &T, b: &T| std::mem::discriminant(&a) == std::mem::discriminant(&b);
+
+        for (i, c) in &mut self.0 {
+            if *i == interaction && variant_eq(c, &class) {
+                *c = class;
+                return;
+            }
+        }
+
+        self.0.push((interaction, class));
+    }
+}
 
 macros::impl_class_list_map!(
     style: StyleClass => Style,
@@ -23,6 +43,7 @@ macros::impl_class_list_map!(
 mod macros {
     macro_rules! impl_class_list_map {
     ($($f:ident : $t:ty => $i:ident),* $(,)?) => {
+        #[doc(hidden)]
         #[derive(Debug, Default, Clone)]
         pub struct ClassListMap {
             $(pub $f: Option<ClassList<$t>>,)*
@@ -62,7 +83,7 @@ mod macros {
                 fn apply_class_system<T: 'static + Send + Sync + ApplyClass>(
                     mut query: Query<
                         (&Interaction, &ClassList<T>, &mut T::Component),
-                        (Changed<Interaction>, With<BsmlNode>),
+                        (Or<(Changed<Interaction>, Changed<ClassList<T>>)>, With<BsmlNode>),
                     >,
                 ) {
                     for (interaction, classes, mut component) in &mut query {

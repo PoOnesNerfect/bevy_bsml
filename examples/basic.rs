@@ -1,6 +1,8 @@
 use bevy::app::AppExit;
 use bevy::ecs::system::Commands;
-use bevy::prelude::{App, Camera2dBundle, Changed, Component, EventWriter, Query, Startup, Update};
+use bevy::prelude::{
+    App, Camera2dBundle, Changed, Component, Entity, EventWriter, Query, Startup, Update,
+};
 use bevy::ui::Interaction;
 use bevy::DefaultPlugins;
 use bevy_bsml::prelude::*;
@@ -44,16 +46,25 @@ bsml! {MenuItem;
 }
 
 fn menu_item_system(
-    query: Query<(&Interaction, &MenuItem), Changed<Interaction>>,
+    query: Query<(Entity, &Interaction, &MenuItem), Changed<Interaction>>,
+    mut classes: Query<&mut ClassList<BackgroundColorClass>>,
     mut exit: EventWriter<AppExit>,
 ) {
-    for (interaction, item) in query.iter() {
+    for (entity, interaction, item) in query.iter() {
         if *interaction == Interaction::Pressed {
             println!("Pressed: {}", item.name);
 
             if item.name == "Exit" {
                 println!("exiting game...");
                 exit.send(AppExit);
+                return;
+            } else if item.name == "Change Color" {
+                println!("changing color...");
+                let mut classes = classes.get_mut(entity).unwrap();
+                classes.upsert(Interaction::Pressed, BG_RED_700);
+                classes.upsert(Interaction::Hovered, BG_RED_600);
+                classes.upsert(Interaction::None, BG_RED_400);
+                return;
             }
         }
     }
@@ -61,7 +72,7 @@ fn menu_item_system(
 
 fn spawn_ui(mut commands: Commands) {
     commands.spawn_bsml(Menu {
-        items: &["Continue", "Setting", "Exit"],
+        items: &["Continue", "Change Color", "Setting", "Exit"],
     });
 }
 
