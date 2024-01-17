@@ -6,16 +6,6 @@ use bevy::DefaultPlugins;
 use bevy_bsml::prelude::*;
 use std::time::Duration;
 
-// spawns a menu with items in the middle of the screen
-#[derive(Debug, Clone, Component)]
-pub struct Screen;
-
-bsml! {Screen;
-    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
-        (LoadingBar)
-    }
-}
-
 #[derive(Debug, Clone, Default, Component)]
 pub struct LoadingBar;
 bsml! {LoadingBar;
@@ -45,7 +35,11 @@ fn loading_bar_system(mut query: Query<(&mut Loaded, &mut StyleClassList)>, time
 }
 
 fn spawn_ui(mut commands: Commands) {
-    commands.spawn_bsml(Screen);
+    commands.spawn_bsml(
+        bsml!((node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+            (LoadingBar)
+        }),
+    );
 }
 
 fn setup(mut commands: Commands) {
