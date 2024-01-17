@@ -7,6 +7,7 @@ use bevy::ui::Interaction;
 use bevy::DefaultPlugins;
 use bevy_bsml::prelude::*;
 
+// spawns a menu with items in the middle of the screen
 #[derive(Debug, Clone, Component)]
 pub struct Menu {
     pub items: &'static [&'static str],
@@ -45,6 +46,7 @@ bsml! {MenuItem;
     }
 }
 
+// handle interactions with menu items
 fn menu_item_system(
     query: Query<(Entity, &Interaction, &MenuItem), Changed<Interaction>>,
     mut classes: Query<&mut ClassList<BackgroundColorClass>>,
@@ -61,9 +63,9 @@ fn menu_item_system(
             } else if item.name == "Change Color" {
                 println!("changing color...");
                 let mut classes = classes.get_mut(entity).unwrap();
-                classes.upsert(Interaction::Pressed, BG_RED_700);
-                classes.upsert(Interaction::Hovered, BG_RED_600);
-                classes.upsert(Interaction::None, BG_RED_400);
+                classes.set(Interaction::Pressed, BG_RED_700);
+                classes.set(Interaction::Hovered, BG_RED_600);
+                classes.set(Interaction::None, BG_RED_400);
                 return;
             }
         }

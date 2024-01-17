@@ -17,7 +17,7 @@ use bevy::{
 pub struct ClassList<T>(Vec<(Interaction, T)>);
 
 impl<T> ClassList<T> {
-    pub fn upsert<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
+    pub fn set<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
         let class = class.into();
 
         let variant_eq = |a: &T, b: &T| std::mem::discriminant(&a) == std::mem::discriminant(&b);
