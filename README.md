@@ -4,53 +4,90 @@
 [<img alt="crates.io" src="https://img.shields.io/crates/v/bevy_bsml.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/bevy_bsml)
 [<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-bevy_bsml-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/bevy_bsml)
 
-**bevy_bsml** is a UI library built on top of bevy's official [bevy_ui](https://github.com/bevyengine/bevy?tab=readme-ov-file) library to help easily create and reuse styled UI components.
+**BSML** stands for **B**evy's **S**imple **M**arkup **L**anguage, or just **BS** **M**arkup **L**anguage.
 
-bevy_bsml is very much inspired by svelte and tailwindcss. So, if you're a web dev, you may feel right at home, with components and inline styling.
+**bevy_bsml** allows you to compose UI elements using simple markup language, inspired by svelte and tailwindcss.
+
+It's built on top of the official [bevy_ui](https://github.com/bevyengine/bevy?tab=readme-ov-file) library, so you can still use `bevy_ui` to manually interact with the ui node or styles.
 
 To see the basic usages of bevy_bsml, check out examples:
 - [basic menu](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/basic_menu.rs)
 - [loading bar](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/loading_bar.rs)
 
-### What is BSML?
 
-**BSML** stands for **B**evy's **S**imple **M**arkup **L**anguage, or **BS** **M**arkup **L**anguage; feel free to pick the one you like more.
+## Table of Contents
 
-#### Why not HTML or XML?
+<!--toc:start-->
+- [bevy_bsml](#bevybsml)
+  - [Table of Contents](#table-of-contents)
+  - [Why not HTML or XML?](#why-not-html-or-xml)
+  - [Basics of BSML](#basics-of-bsml)
+  - [Element Types in BSML](#element-types-in-bsml)
+    - [node](#node)
+    - [for](#for)
+    - [slot](#slot)
+    - [text](#text)
+  - [Attributes in BSML](#attributes-in-bsml)
+    - [class](#class)
+    - [labels](#labels)
+  - [Custom Reusable Components](#custom-reusable-components)
+    - [Defining a Reusable Component](#defining-a-reusable-component)
+    - [Using a Reusable Component](#using-a-reusable-component)
+      - [Spawning component directly](#spawning-component-directly)
+      - [4. Spawning a UI element](#4-spawning-a-ui-element)
+      - [5. Defining a Reusable Component](#5-defining-a-reusable-component)
+  - [Spawning UI Elements using BSML](#spawning-ui-elements-using-bsml)
+  - [Reactivity with Spawned Components](#reactivity-with-spawned-components)
+<!--toc:end-->
+
+
+## Why not HTML or XML?
 
 Because the angle bracketed markup languages don't work well with rust macros, and `(...)` and `{...}` work naturally.
 
-### BSML Overview
 
-#### 1. Tag is inside parenthesis `(MyComponent)`, followed by content nested in braces `{ ... }`.
+## Basics of BSML
 
-```rust
-bsml!{
-    (node) {
-        (node)
-    }
+In BSML, `(...)` contains the name of the element and its attributes, and `{...}` contains the content of the element, like nested elements.
+
+Here is a basic example of BSML:
+
+```
+(node) {
+    (text) { "hello world" }
 }
 ```
-is same as
+
+which is equal to following html:
+
 ```html
 <div>
-  <div />
+  hello world
 </div>
 ```
 
-You can have multiple elements inside braces:
-```rust
-bsml!{
+If an element doesn't have any content, you can skip the braces:
+
+```
+(node)
+```
+
+This is a valid bsml; it will spawn a NodeBundle with default styles with no content.
+
+You can also nest elements inside braces:
+
+```
+(node) {
+    (node)
+    (text) { "hello world" }
     (node) {
-        (node)
-        (text) { "hello world" }
-        (node) {
-            (text) { "nested text" }
-        }
+        (text) { "nested text" }
     }
 }
 ```
-is same as
+
+is equal to
+
 ```html
 <div>
   <div />
@@ -61,193 +98,431 @@ is same as
 </div>
 ```
 
-#### 2. There can be only one root element.
+## Element Types in BSML
 
-Valid cases:
-```rust
-bsml!{
-    (node) { (node) }
-}
+### node
 
-bsml!{
-  (node)
-}
+`(node)` is like `div` in html; you can have nested elements in it, or just use one without nested elements just to style it.
 
-bsml!{
-  (slot)
-}
+Available attributes are [labels](#labels) and [class](#class).
 
-bsml!{
-  (text) { "hello world" }
+**Examples**:
+
+*100x100px blue box with no nested elements*:
+```
+(node class=[w_px(100.0), h_px(100.0), BG_BLUE_400])
+```
+
+*centering a node*:
+```
+(node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER]) {
+    (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
 }
 ```
 
-Invalid:
-```rust
-bsml!{
-    (node) (node)
-}
-
-bsml!{
-    (node) { (node) }
-    (text) { "hello world" }
+*text in the blue box*:
+```
+(node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
+    (text class=[TEXT_WHITE]}) { "hello world" }
 }
 ```
 
-As you can see, if element doesn't have any nested elements, braces are optional.
-
-So, if you have a UI Component `MenuItem`, which already has content layed out, you can skip braces when using the component.
-
+*with labels*:
 ```rust
-pub struct MenuItem;
-bsml!(MenuItem;
-    (node) {
-        (text) { "hello world" }
+#[derive(Component)]
+pub struct MyNode { i: u8 }
+```
+
+```
+(node labels=[MyNode { i: 0 }] class=[w_px(100.0), h_px(100.0), BG_BLUE_400])
+```
+
+### for
+
+`(for)` is a node that iterates over a given iterator and repeats nested elements for each item.
+
+The syntax is `(for {<item> in <iterator>}) { <nested elements> }`.
+
+`<item>` is a variable name, and
+`<iterator>` can be any expression that implements `IntoIterator`, just like in `for ... in ...` loop.
+
+Optionally, you can also get the index of the item like:
+
+```
+(for {<index>, <item> in <iterator>}) { <nested elements> }
+```
+
+Available attributes are [labels](#labels) and [class](#class).
+
+**Examples**:
+
+*simple menu screen*:
+```
+(for
+    {name in ["Continue", "Setting", "Exit"]}
+    class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]
+) {
+    (node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
+        (text class=[TEXT_BASE]) { "{}", name }
     }
-)
+}
+```
 
-pub struct Menu;
-bsml!{Menu;
-    (node) {
-        (MenuItem)
-        (MenuItem)
-        (MenuItem)
+*simple menu screen with index*:
+```
+(for
+    {i, name in ["Continue", "Setting", "Exit"]}
+    class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]
+) {
+    (node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
+        (text class=[TEXT_BASE]) { "{}: {}", i, name }
     }
 }
 ```
 
-#### 3. Building Blocks
+### slot
 
-Currently, bsml has 3 base elements: **node**, **text**, and **slot**.
+`(slot)` is a special element; it's used in [reusable component](#custom-reusable-components) definitions to expose space for its child elements.
 
-**node** is like `div` in html; you can have nested elements in it, or just use one without nested elements just to style it.
+When it has nested elements in braces, it will be used as default content of the slot, replaced when the slot is used.
+If you don't need default content, you can skip the braces.
 
+Available attributes are [labels](#labels) and [class](#class).
+
+**Examples**:
+
+*Define a Button component*:
 ```rust
-bsml! {
-    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]) {
-        (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400]) // I just centered this div, i mean node
+#[derive(Component)]
+pub struct MyButton;
+
+// define a button component
+bsml!{MyButton;
+    (slot class=[w_px(100.0), h_px(100.0), BG_BLUE_400, hovered(BG_BLUE_600)]) {
+        (text class=[TEXT_WHITE]) { "I am button" } // default content
     }
+}
+
+fn spawn_ui_system(mut commands: Commands) {
+    // spawn a screen using bsml!
+    commands.spawn_bsml(bsml!(
+        (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+            (MyButton) { (text class=[TEXT_WHITE]) { "button 1" } }    // displays "button 1"
+            (MyButton) { (text class=[TEXT_WHITE]) { "button 2" } }    // displays "button 2"
+            (MyButton)                              // displays "i am button"
+        }
+    ));
 }
 ```
 
-**text** is an element for displaying text. This element is different than others.
-You must follow up the tag with braces, where its content is a string with optional arguments, exactly like arguments of `format!(...)`.
+### text
+
+`(text)` element is different than other elements in that you cannot nest elements inside it.
+
+Instead, content inside `{...}` is exactly like arguments of `format!(...)`.
+
+Available attributes are [labels](#labels) and [class](#class).
+
+**Examples**:
+
+*basic*:
+```
+(text) { "hello world" }
+```
+
+*with arguments*:
+```
+(text) { "{} + {} = {}", 1, 2, 1 + 2 }
+```
+
+*with styling*:
+```
+(text class=[TEXT_XS]) { "I'm a tiny wittle text" }
+```
+
+*with labels*:
+```rust
+#[derive(Component)]
+pub struct MyText;
+```
+
+```
+(text labels=[MyText] class=[TEXT_XS]) { "I'm a tiny little text" }
+```
+
+## Attributes in BSML
+
+### class
+
+`class` attribute is used to specify the styles of the element, like tailwindcss.
+
+In class attribute, you can provide list of provided style classes like [W_FULL] or [BG_SLATE_200],
+or any expressions that return of one: [StyleClass], [BackgroundColorClass], [BorderColorClass], and [ZIndex].
+
+
+**Example** Centering a node in the center of the screen
+
+```
+(node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+    (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+}
+```
+
+The outer node will fill the entire screen, and center its content.
+The inner node will be 100x100px with blue background color.
+
+#### Changing Styles on Interaction
+
+You can specify styles that are applied when the node is hovered or pressed, like in tailwindcss.
+
+```
+(node class=[h_px(100.0), w_px(100.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800)])
+```
+
+**caveat**: if you plan to use `hovered` or `pressed` style classes, you must specify also specify the base class,
+else it will not return back to previous style.
+
+
+### labels
+
+`labels` attribute is a list of bevy components that are spawned with the node.
+
+You can use these components to query for the node, or change data when the node is hovered or pressed.
+
+You can then query for the node using the label component.
+
+```
+(node labels=[MyComponent])
+```
+
 ```rust
 #[derive(Component)]
 pub struct MyComponent;
-bsml! {MyComponent;
-    (text class=[TEXT_BASE]) {
-        "hello world"
-    }
+
+// get the entity of the node with MyComponent
+// when the node is clicked or hovered
+fn my_system(query: Query<Entity, (With<MyComponent>, Changed<Interaction>)>) {
+    // ...
 }
 ```
 
-If it is a component which has fields, you can also use fields as arguments:
+If your label component has fields, you can also provide expression that returns the initialized component.
+
+```
+(node labels=[MyComponent { i: 0, name: "hello".to_owned() }, label2()])
+```
+
 ```rust
 #[derive(Component)]
 pub struct MyComponent {
     pub i: u8,
     pub name: String,
 }
-bsml! {MyComponent;
-    (text class=[TEXT_BASE]) {
-        "index: {}, name: {}", i, name
+
+#[derive(Component)]
+pub struct Label2;
+
+fn label2() -> Label2 {
+    Label2
+}
+```
+
+and you can interact with the components in your systems:
+
+```rust
+fn my_system(query: Query<&MyComponent, (With<Label2>, Changed<Interaction>)>) {
+    for my_component in query.iter() {
+        println!("Interacted with node {}: {}", my_component.i, my_component.name);
     }
 }
 ```
 
-**limitations**:
-- you cannot have arguments in strings:
-  - **valid**: `(text) { "index: {}, name: {}", i, name }`
-  - **invalid**: `(text) { "index: {i}, name: {name}" }`
-- you can only have component fields as arguments, no expressions. This may change in the future.
-  - **valid**: `(text) { "index: {}, name: {}", i, name }`
-  - **invalid**: `(text) { "index: {}, name: {}", "0".parse::<u8>().unwrap(), "hello world" }`
- 
-**slot** is an element used in components to let the users of the component fill in content.
-Nested elements in braces of `slot` element is the default content if not supplied by user.
+**advanced**: you can also use the fields of the label component in your bsml:
+
 ```rust
 #[derive(Component)]
-pub struct Button;
-bsml! {Button;
-    (slot class=[BG_WHITE, hovered(BG_BLUE_400)]) {
-        (text) { "I am button" } // default content
-    }
-}
-
-#[derive(Component)]
-pub struct ButtonList;
-bsml! {ButtonList;
-    (Button)                               // "I am button"
-    (Button) { (text) { "hello world" } }  // "hello world"
+pub struct Label {
+    pub text: &'static str,
+    pub width: f32
 }
 ```
 
-#### 4. Spawning a UI element
-
-You can directly spawn a UI element without defining a component.
-
-```rust
-use bevy_bsml::{bsml, SpawnBsml};
-
-commands.spawn_bsml(bsml!((node class=[BG_BLUE_200, hovered(BG_BLUE_400)]) {
-    (text) { "hello world" }
-});
+```
+(node labels=[Label { text: "hello world", width: 100.0 }]) {
+    (text class=[w_px(labels.0.width)]) { "{}", labels.0.text }
+}
 ```
 
-You can also spawn the UI component:
-```rust
-use bevy_bsml::{bsml, SpawnBsml};
+## Custom Reusable Components
 
+### Defining a Reusable Component
+
+You can define your own reusable components using bsml.
+
+The only requirement is that you must derive `bevy::prelude::Component` trait on the struct.
+
+Here is an example of a reusable component definition:
+
+```rust
 #[derive(Component)]
-pub struct NameCard {
-    name: String,
-}
-bsml!(NameCard;
-  (node class=[BG_BLUE_200, hovered(BG_BLUE_400)]) {
-    (text) { "hello {}", name }
-  }
-);
-
-commands.spawn_bsml(NameCard { name: "jack".to_owned() });
-```
-
-#### 5. Defining a Reusable Component
-
-You can also define UI component that can be reused by other elements, by specifying component struct type followed by semicolon.
-
-```rust
-#[derive(Debug, Clone, Component)]
-pub struct Menu;
-
-bsml! {Menu;
-    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]) {
-        (node class=[FLEX_COL, gap_y(20.0)]) {
-            (MenuItem i={0} name={"Continue".to_owned()})
-            (MenuItem i={1} name={"Setting".to_owned()})
-            (MenuItem i={2} name={"Exit".to_owned()})
-        }
-    }
-}
-
-#[derive(Debug, Clone, Component)]
-pub struct MenuItem {
+pub struct MyComponent {
     pub i: u8,
-    pub name: String,
+    pub name: &'static str,
 }
 
-bsml! {MenuItem;
-    (node
-        class=[w_px(200.0), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), JUSTIFY_CENTER, ITEMS_CENTER]
-    ) {
-        (text class=[TEXT_BASE]) { "{}: {}", i, name }
+bsml! {MyComponent;
+    (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400]) {
+        (text class=[TEXT_WHITE, TEXT_BASE]) { "index: {}, name: {}", self.i, self.name }
+    }
+}
+```
+
+In the macro, notice the component struct followed by semicolon, which is not part of the bsml syntax.
+
+This may seem a bit jarring, but this is intentional to make it clear that you are defining a reusable component.
+
+### Using Component Fields in BSML
+
+As you may have noticed, you can also use the fields of the component in bsml.
+
+You can use it in class, labels, or in nested element contents like text element, by referencing them like `self.<field_name>`.
+
+```rust
+#[derive(Component)]
+pub struct MyComponent {
+    pub i: u8,
+    pub name: &'static str,
+    pub width: f32,
+}
+
+bsml! {MyComponent;
+    (node class=[h_px(100.0), w_px(self.width), BG_BLUE_400]) {
+        (text class=[TEXT_WHITE, TEXT_BASE]) { "index: {}, name: {}", self.i, self.name }
+    }
+}
+```
+
+**note** that these are not reactive. They are evaluated only once when the component is initialized.
+
+Even if the field value changes, the bsml UI will not be updated.
+
+### Using a Reusable Component
+
+After you have defined a reusable component, you can use it either by spawning it directly or including in other bsml elements.
+
+#### Spawning component directly
+
+The easiest way to use a reusable component is to spawn it directly.
+
+```rust
+use bevy_bsml::prelude::*;
+
+fn spawn_bsml_ui(mut commands: Commands) {
+    commands.spawn_bsml(MyComponent { i: 0, name: "hello" });
+}
+```
+
+#### Including in other bsml elements
+
+When using a reusable component in other bsml elements, you can use any expression that returns the initialized component in a parenthesis.
+
+```rust
+use bevy_bsml::prelude::*;
+
+#[derive(Component)]
+pub struct MyContainer;
+
+bsml! {MyContainer;
+    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+        (MyComponent { i: 0, name: "hello" })
     }
 }
 
-commands.spawn_bsml(Menu);
+fn spawn_bsml_ui(mut commands: Commands) {
+    commands.spawn_bsml(MyContainer);
+}
 ```
 
-### To Be Continued
+The expression can be anything. You could even do something like:
 
-I'll finish the rest of documentation when I have time.
-In the mean time, check the examples to see how things work!
+```rust
+use bevy_bsml::prelude::*;
+
+#[derive(Component)]
+pub struct MyContainer;
+
+fn component(i: u8, name: &'static str) -> MyComponent {
+    MyComponent { i, name }
+}
+
+bsml! {MyContainer;
+    (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+        (component(0, "hello"))
+    }
+}
+
+fn spawn_bsml_ui(mut commands: Commands) {
+    commands.spawn_bsml(MyContainer);
+}
+```
+
+## Spawning UI Elements using BSML
+
+There are two ways to spawn UI elements using bsml.
+
+### Spawning an anonymous UI element
+
+You can directly include the `bsml!` macro in `Commands::spawn_bsml` method.
+
+```rust
+use bevy_bsml::prelude::*;
+
+fn spawn_bsml_ui(mut commands: Commands) {
+    commands.spawn_bsml(bsml!(
+        (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+            (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+        }
+    ));
+}
+```
+
+### Spawning a Reusable Component
+
+See [Spawning Component Directly](#spawning-component-directly).
+
+## Despawning BSML Elements
+
+To despawn bsml elements, you can use `Commands::despawn_bsml` method, and provide the component's entity.
+
+```rust
+use bevy_bsml::prelude::*;
+
+fn spawn_bsml_ui(mut commands: Commands) {
+    // spawn a screen using bsml!
+    let entity = commands.spawn_bsml(bsml!(
+        (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
+            (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+        }
+    ))
+    .id();
+
+    // despawn the screen entity
+    commands.despawn_bsml(entity);
+}
+```
+
+## Reactivity with Spawned Components
+
+Since bsml spawns bev_ui components internally, you can just use `bevy::ui::Interaction` to detect and react to UI interactions.
+
+Check out examples to see how to react to UI interactions:
+- [basic menu](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/basic_menu.rs)
+- [loading bar](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/loading_bar.rs)
+
+
+[BG_SLATE_200]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/background_color/constant.BG_SLATE_200.html
+[W_FULL]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/sizing/constant.W_FULL.html
+[StyleClass]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/enum.StyleClass.html
+[BackgroundColorClass]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/background_color/struct.BackgroundColorClass.html
+[BorderColorClass]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/border_color/struct.BorderColorClass.html
+[ZIndex]: https://docs.rs/bevy/0.12.1/bevy/ui/enum.ZIndex.html

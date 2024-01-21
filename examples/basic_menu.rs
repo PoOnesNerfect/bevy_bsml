@@ -7,40 +7,32 @@ use bevy::ui::Interaction;
 use bevy::DefaultPlugins;
 use bevy_bsml::prelude::*;
 
-// spawns a menu with items in the middle of the screen
 #[derive(Debug, Clone, Component)]
-pub struct Menu {
-    pub items: &'static [&'static str],
-}
+pub struct MenuScreen;
 
-bsml! {Menu;
+bsml! {MenuScreen;
     (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
-        (for {i, name in self.items} class=[FLEX_COL, gap_y(20.0)]) {
-            (MenuItem i name ..default)
+        (for
+            {name in ["Continue", "Change Color", "Setting", "Exit"]}
+            class=[FLEX_COL, gap_y(20.0)]
+        ) {
+            (MenuItem { name, width: 200.0 })
         }
     }
 }
 
 #[derive(Debug, Clone, Component)]
 pub struct MenuItem {
-    pub i: usize,
     pub name: &'static str,
     pub width: f32,
 }
 
-impl Default for MenuItem {
-    fn default() -> Self {
-        Self {
-            i: 0,
-            name: "Menu Item",
-            width: 200.0,
-        }
-    }
-}
-
 bsml! {MenuItem;
     (slot
-        class=[w_px(self.width), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800), JUSTIFY_CENTER, ITEMS_CENTER]
+        class=[
+            w_px(self.width), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800),
+            JUSTIFY_CENTER, ITEMS_CENTER
+        ]
     ) {
         (text class=[TEXT_BASE]) { "{}", self.name }
     }
@@ -73,9 +65,7 @@ fn menu_item_system(
 }
 
 fn spawn_ui(mut commands: Commands) {
-    commands.spawn_bsml(Menu {
-        items: &["Continue", "Change Color", "Setting", "Exit"],
-    });
+    commands.spawn_bsml(MenuScreen);
 }
 
 fn setup(mut commands: Commands) {

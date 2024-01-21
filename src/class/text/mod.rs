@@ -1,9 +1,9 @@
+use self::color::TextColor;
 use super::ApplyClass;
-use bevy::{
-    prelude::Color,
-    text::{Text, TextAlignment},
-};
+use bevy::text::{Text, TextAlignment};
 use derive_more::From;
+
+pub mod color;
 
 #[derive(Debug, Clone, From)]
 pub enum TextClass {
@@ -50,16 +50,5 @@ impl ApplyClass for FontSize {
 
     fn apply_class(&self, component: &mut Self::Component) {
         component.sections[0].style.font_size = self.0;
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct TextColor(Color);
-
-impl ApplyClass for TextColor {
-    type Component = Text;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.sections[0].style.color = self.0;
     }
 }
