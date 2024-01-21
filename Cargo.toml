@@ -1,6 +1,6 @@
 [package]
 name = "bevy_bsml"
-version = "0.0.6"
+version = "0.0.7"
 description = "A UI library to compose UI elements using simple markup language, inspired by svelte and tailwindcss"
 edition = "2021"
 authors = ["Jack Lee <jack.y.l.dev@gmail.com>"]
