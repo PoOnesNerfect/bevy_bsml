@@ -12,6 +12,6 @@ rust-version = "1.56"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { version = "0.12" }
+bevy = { version = "0.13" }
 derive_more = "0.99.17"
 replace_ident = { version = "0.1.1", path="replace_ident" }

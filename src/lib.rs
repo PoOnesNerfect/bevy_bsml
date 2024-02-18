@@ -44,13 +44,13 @@ impl Plugin for BsmlPlugin {
     }
 }
 
-pub trait SpawnBsml<'w, 's> {
-    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'w, 's, 'a>;
+pub trait SpawnBsml {
+    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'a>;
     fn despawn_bsml(&mut self, entity: Entity);
 }
 
-impl<'w, 's> SpawnBsml<'w, 's> for bevy::ecs::system::Commands<'w, 's> {
-    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'w, 's, 'a> {
+impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
+    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'a> {
         let entity = node.spawn(self, &[]);
         self.entity(entity)
     }

@@ -40,7 +40,7 @@ fn loading_bar_system(mut query: Query<(&mut LoadPerc, &mut StyleClassList)>, ti
     if loaded.timer.just_finished() {
         classes.set(Interaction::None, w_perc(100.0));
     } else if !loaded.timer.finished() {
-        classes.set(Interaction::None, w_perc(loaded.timer.percent() * 100.0));
+        classes.set(Interaction::None, w_perc(loaded.timer.fraction() * 100.0));
     }
 }
 
