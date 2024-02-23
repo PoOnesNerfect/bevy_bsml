@@ -1,6 +1,6 @@
 use self::color::TextColor;
 use super::ApplyClass;
-use bevy::text::{Text, TextAlignment};
+use bevy::text::{JustifyText, Text};
 use derive_more::From;
 
 pub mod color;
@@ -8,7 +8,7 @@ pub mod color;
 #[derive(Debug, Clone, From)]
 pub enum TextClass {
     FontSize(FontSize),
-    TextAlignment(TextAlignment),
+    JustifyText(JustifyText),
     TextColor(TextColor),
 }
 
@@ -18,17 +18,17 @@ impl ApplyClass for TextClass {
     fn apply_class(&self, component: &mut Self::Component) {
         match self {
             Self::FontSize(font_size) => font_size.apply_class(component),
-            Self::TextAlignment(text_alignment) => text_alignment.apply_class(component),
+            Self::JustifyText(justify_text) => justify_text.apply_class(component),
             Self::TextColor(text_color) => text_color.apply_class(component),
         }
     }
 }
 
-impl ApplyClass for TextAlignment {
+impl ApplyClass for JustifyText {
     type Component = Text;
 
     fn apply_class(&self, component: &mut Self::Component) {
-        component.alignment = *self;
+        component.justify = *self;
     }
 }
 
