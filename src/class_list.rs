@@ -82,8 +82,10 @@ mod macros {
             }
 
             pub fn spawn(mut self, commands: &mut Commands, entity: Entity) {
+                let mut entity = commands.entity(entity);
+
                 $(if let Some(class_list) = self.$f.take() {
-                    commands.entity(entity).insert(class_list);
+                    entity.insert(class_list);
                 })*
             }
 
