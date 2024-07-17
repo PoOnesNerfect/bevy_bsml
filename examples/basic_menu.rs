@@ -1,10 +1,4 @@
-use bevy::app::AppExit;
-use bevy::ecs::system::Commands;
-use bevy::prelude::{
-    App, Camera2dBundle, Changed, Component, Entity, EventWriter, Query, Startup, Update,
-};
-use bevy::ui::Interaction;
-use bevy::DefaultPlugins;
+use bevy::prelude::*;
 use bevy_bsml::prelude::*;
 
 #[derive(Debug, Clone, Component)]
@@ -38,6 +32,22 @@ bsml! {MenuItem;
     }
 }
 
+fn close_on_esc(
+    mut commands: Commands,
+    focused_windows: Query<(Entity, &Window)>,
+    input: Res<ButtonInput<KeyCode>>,
+) {
+    for (window, focus) in focused_windows.iter() {
+        if !focus.focused {
+            continue;
+        }
+
+        if input.just_pressed(KeyCode::Escape) {
+            commands.entity(window).despawn();
+        }
+    }
+}
+
 // handle interactions with menu items
 fn menu_item_system(
     query: Query<(Entity, &Interaction, &MenuItem), Changed<Interaction>>,
@@ -50,7 +60,7 @@ fn menu_item_system(
 
             if item.name == "Exit" {
                 println!("exiting game...");
-                exit.send(AppExit);
+                exit.send(AppExit::Success);
                 return;
             } else if item.name == "Change Color" {
                 println!("changing color...");
@@ -79,6 +89,6 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(Startup, spawn_ui)
         .add_systems(Update, menu_item_system)
-        .add_systems(Update, bevy::window::close_on_esc)
+        .add_systems(Update, close_on_esc)
         .run();
 }
