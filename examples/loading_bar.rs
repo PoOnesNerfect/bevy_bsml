@@ -1,10 +1,7 @@
-use bevy::ecs::system::Commands;
-use bevy::prelude::{App, Camera2dBundle, Component, Query, Res, Startup, Update};
-use bevy::time::{Time, Timer, TimerMode};
-use bevy::ui::Interaction;
-use bevy::DefaultPlugins;
-use bevy_bsml::prelude::*;
 use std::time::Duration;
+
+use bevy::prelude::*;
+use bevy_bsml::prelude::*;
 
 #[derive(Debug, Clone, Default, Component)]
 pub struct LoadingBar;
@@ -30,6 +27,22 @@ bsml! {LoadingBar;
             labels=[LoadPerc::default()]
             class=[w_perc(0.0), H_FULL, BG_BLUE_400]
         )
+    }
+}
+
+fn close_on_esc(
+    mut commands: Commands,
+    focused_windows: Query<(Entity, &Window)>,
+    input: Res<ButtonInput<KeyCode>>,
+) {
+    for (window, focus) in focused_windows.iter() {
+        if !focus.focused {
+            continue;
+        }
+
+        if input.just_pressed(KeyCode::Escape) {
+            commands.entity(window).despawn();
+        }
     }
 }
 
@@ -63,6 +76,6 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(Startup, spawn_ui)
         .add_systems(Update, loading_bar_system)
-        .add_systems(Update, bevy::window::close_on_esc)
+        .add_systems(Update, close_on_esc)
         .run();
 }

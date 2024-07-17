@@ -1,5 +1,5 @@
 use bevy::{
-    ecs::system::{Command, EntityCommands},
+    ecs::{system::EntityCommands, world::Command},
     prelude::{despawn_with_children_recursive, App, Commands, Component, Entity, Plugin},
     reflect::Reflect,
 };
