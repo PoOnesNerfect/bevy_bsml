@@ -32,7 +32,35 @@ pub enum ClassEnum {
     Text(TextClass),
 }
 
+#[doc(hidden)]
+pub enum Either<L, R> {
+    Left(L),
+    Right(R),
+}
+
+impl<'a> From<&'a mut NodeBundle> for Either<&'a mut NodeBundle, &'a mut TextBundle> {
+    fn from(bundle: &'a mut NodeBundle) -> Self {
+        Either::Left(bundle)
+    }
+}
+
+impl<'a> From<&'a mut TextBundle> for Either<&'a mut NodeBundle, &'a mut TextBundle> {
+    fn from(bundle: &'a mut TextBundle) -> Self {
+        Either::Right(bundle)
+    }
+}
+
 impl ClassEnum {
+    pub fn apply_to_either_bundle<'a, T: Into<Either<&'a mut NodeBundle, &'a mut TextBundle>>>(
+        &self,
+        bundle: T,
+    ) {
+        match bundle.into() {
+            Either::Left(bundle) => self.apply_to_node_bundle(bundle),
+            Either::Right(bundle) => self.apply_to_text_bundle(bundle),
+        }
+    }
+
     pub fn apply_to_node_bundle(&self, bundle: &mut NodeBundle) {
         match self {
             ClassEnum::BackgroundColor(class) => class.apply_class(&mut bundle.background_color),
