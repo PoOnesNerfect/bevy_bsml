@@ -11,16 +11,19 @@
 It's built on top of the official [bevy_ui](https://github.com/bevyengine/bevy?tab=readme-ov-file) library, so you can still use `bevy_ui` to manually interact with the ui node or styles.
 
 To see the basic usages of bevy_bsml, check out examples:
+
 - [basic menu](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/basic_menu.rs)
 - [loading bar](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/loading_bar.rs)
-
 
 ## Table of Contents
 
 <!--toc:start-->
+
 - [bevy_bsml](#bevybsml)
   - [Table of Contents](#table-of-contents)
   - [Why not HTML or XML?](#why-not-html-or-xml)
+  - [Supported Bevy Versions](#supported-bevy-versions)
+  - [Setup](#setup)
   - [Basics of BSML](#basics-of-bsml)
   - [Element Types in BSML](#element-types-in-bsml)
     - [node](#node)
@@ -42,13 +45,40 @@ To see the basic usages of bevy_bsml, check out examples:
     - [Spawning a Reusable Component](#spawning-a-reusable-component)
   - [Despawning BSML Elements](#despawning-bsml-elements)
   - [Reactivity with Spawned Components](#reactivity-with-spawned-components)
-<!--toc:end-->
 
+<!--toc:end-->
 
 ## Why not HTML or XML?
 
 Because the angle bracketed markup languages don't work well with rust macros, and `(...)` and `{...}` work naturally.
 
+## Supported Bevy Versions
+
+From version 0.14, bevy_bsml will keep the same minor version as Bevy,
+while patch version will vary.
+
+| Bevy | bevy_bsml |
+| ---- | --------- |
+| 0.14 | 0.14      |
+| 0.13 | 0.0.8     |
+| 0.12 | 0.0.7     |
+
+## Setup
+
+Import the prelude module, and add `BsmlPlugin`.
+
+```rust
+use bevy_bsml::prelude::*;
+
+fn main() {
+    App::build()
+        .add_plugins(DefaultPlugins)
+        .add_plugin(BsmlPlugin)
+        .run();
+}
+```
+
+See the [examples](https://github.com/PoOnesNerfect/bevy_bsml/tree/main/examples) for more detailed usage.
 
 ## Basics of BSML
 
@@ -112,26 +142,30 @@ Available attributes are [labels](#labels) and [class](#class).
 
 **Examples**:
 
-*100x100px blue box with no nested elements*:
+_100x100px blue box with no nested elements_:
+
 ```
 (node class=[w_px(100.0), h_px(100.0), BG_BLUE_400])
 ```
 
-*centering a node*:
+_centering a node_:
+
 ```
 (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER]) {
     (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
 }
 ```
 
-*text in the blue box*:
+_text in the blue box_:
+
 ```
 (node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
     (text class=[TEXT_WHITE]}) { "hello world" }
 }
 ```
 
-*with labels*:
+_with labels_:
+
 ```rust
 #[derive(Component)]
 pub struct MyNode { i: u8 }
@@ -160,7 +194,8 @@ Available attributes are [labels](#labels) and [class](#class).
 
 **Examples**:
 
-*simple menu screen*:
+_simple menu screen_:
+
 ```
 (for
     {name in ["Continue", "Setting", "Exit"]}
@@ -172,7 +207,8 @@ Available attributes are [labels](#labels) and [class](#class).
 }
 ```
 
-*simple menu screen with index*:
+_simple menu screen with index_:
+
 ```
 (for
     {i, name in ["Continue", "Setting", "Exit"]}
@@ -195,7 +231,8 @@ Available attributes are [labels](#labels) and [class](#class).
 
 **Examples**:
 
-*Define a Button component*:
+_Define a Button component_:
+
 ```rust
 #[derive(Component)]
 pub struct MyButton;
@@ -229,22 +266,26 @@ Available attributes are [labels](#labels) and [class](#class).
 
 **Examples**:
 
-*basic*:
+_basic_:
+
 ```
 (text) { "hello world" }
 ```
 
-*with arguments*:
+_with arguments_:
+
 ```
 (text) { "{} + {} = {}", 1, 2, 1 + 2 }
 ```
 
-*with styling*:
+_with styling_:
+
 ```
 (text class=[TEXT_XS]) { "I'm a tiny wittle text" }
 ```
 
-*with labels*:
+_with labels_:
+
 ```rust
 #[derive(Component)]
 pub struct MyText;
@@ -262,7 +303,6 @@ pub struct MyText;
 
 In class attribute, you can provide list of provided style classes like [W_FULL] or [BG_SLATE_200],
 or any expressions that return of one: [StyleClass], [BackgroundColorClass], [BorderColorClass], and [ZIndex].
-
 
 **Example** Centering a node in the center of the screen
 
@@ -285,7 +325,6 @@ You can specify styles that are applied when the node is hovered or pressed, lik
 
 **caveat**: if you plan to use `hovered` or `pressed` style classes, you must specify also specify the base class,
 else it will not return back to previous style.
-
 
 ### labels
 
@@ -520,9 +559,9 @@ fn spawn_bsml_ui(mut commands: Commands) {
 Since bsml spawns bev_ui components internally, you can just use `bevy::ui::Interaction` to detect and react to UI interactions.
 
 Check out examples to see how to react to UI interactions:
+
 - [basic menu](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/basic_menu.rs)
 - [loading bar](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/loading_bar.rs)
-
 
 [BG_SLATE_200]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/background_color/constant.BG_SLATE_200.html
 [W_FULL]: https://docs.rs/bevy_bsml/0.0.5/bevy_bsml/class/sizing/constant.W_FULL.html

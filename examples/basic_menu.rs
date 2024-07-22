@@ -62,7 +62,8 @@ fn menu_item_system(
                 println!("exiting game...");
                 exit.send(AppExit::Success);
                 return;
-            } else if item.name == "Change Color" {
+            }
+            if item.name == "Change Color" {
                 println!("changing color...");
                 let mut classes = classes.get_mut(entity).unwrap();
                 classes.set(Interaction::Pressed, BG_RED_700);
