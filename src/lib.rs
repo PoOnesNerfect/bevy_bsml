@@ -209,7 +209,7 @@ macro_rules! bsml {
                 let (__interaction, mut __class) = $crate::replace_ident!(labels, labels_ref, $crate::replace_ident!(self, $this, $class)).with_interaction();
 
                 if __interaction == $crate::bevy::ui::Interaction::None {
-                    __class.apply_to_either_bundle(&mut $bundle);
+                    $bundle .apply_class(&__class);
                 }
 
                 __class_map.insert(__interaction, __class);

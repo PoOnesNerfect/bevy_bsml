@@ -43,45 +43,6 @@ pub enum BsmlClass {
 }
 
 impl BsmlClass {
-    /// Apply the class to a NodeBundle or TextBundle.
-    #[inline]
-    pub fn apply_to_either_bundle<
-        'a,
-        T: Into<EitherBundle<&'a mut NodeBundle, &'a mut TextBundle>>,
-    >(
-        &self,
-        bundle: T,
-    ) {
-        match bundle.into() {
-            EitherBundle::Left(bundle) => self.apply_to_node_bundle(bundle),
-            EitherBundle::Right(bundle) => self.apply_to_text_bundle(bundle),
-        }
-    }
-
-    /// Apply the class to a NodeBundle.
-    #[inline]
-    pub fn apply_to_node_bundle(&self, bundle: &mut NodeBundle) {
-        match self {
-            BsmlClass::BackgroundColor(class) => bundle.background_color.apply_class(class),
-            BsmlClass::BorderColor(class) => bundle.border_color.apply_class(class),
-            BsmlClass::Style(class) => bundle.style.apply_class(class),
-            BsmlClass::ZIndex(class) => bundle.z_index.apply_class(class),
-            BsmlClass::Text(_) => {}
-        }
-    }
-
-    /// Apply the class to a TextBundle.
-    #[inline]
-    pub fn apply_to_text_bundle(&self, bundle: &mut TextBundle) {
-        match self {
-            BsmlClass::Text(class) => bundle.text.apply_class(class),
-            BsmlClass::BackgroundColor(class) => bundle.background_color.apply_class(class),
-            BsmlClass::Style(class) => bundle.style.apply_class(class),
-            BsmlClass::ZIndex(class) => bundle.z_index.apply_class(class),
-            BsmlClass::BorderColor(_) => {}
-        }
-    }
-
     /// Check if the class is of same type to another class.
     #[inline]
     pub(crate) fn eq_class_type(&self, other: &Self) -> bool {
@@ -121,6 +82,32 @@ impl<T: Into<BsmlClass>> WithInteraction for T {
 #[doc(hidden)]
 pub trait ApplyClass<Class> {
     fn apply_class(&mut self, class: &Class);
+}
+
+impl ApplyClass<BsmlClass> for NodeBundle {
+    #[inline]
+    fn apply_class(&mut self, class: &BsmlClass) {
+        match class {
+            BsmlClass::BackgroundColor(class) => self.background_color.apply_class(class),
+            BsmlClass::BorderColor(class) => self.border_color.apply_class(class),
+            BsmlClass::Style(class) => self.style.apply_class(class),
+            BsmlClass::ZIndex(class) => self.z_index.apply_class(class),
+            BsmlClass::Text(_) => {}
+        }
+    }
+}
+
+impl ApplyClass<BsmlClass> for TextBundle {
+    #[inline]
+    fn apply_class(&mut self, class: &BsmlClass) {
+        match class {
+            BsmlClass::BackgroundColor(class) => self.background_color.apply_class(class),
+            BsmlClass::Style(class) => self.style.apply_class(class),
+            BsmlClass::ZIndex(class) => self.z_index.apply_class(class),
+            BsmlClass::Text(class) => self.text.apply_class(class),
+            BsmlClass::BorderColor(_) => {}
+        }
+    }
 }
 
 impl ApplyClass<BsmlClass> for Style {
@@ -170,24 +157,5 @@ impl ApplyClass<BsmlClass> for ZIndex {
             BsmlClass::ZIndex(color) => self.apply_class(color),
             _ => {}
         }
-    }
-}
-
-/// A helper enum to allow applying classes to either a NodeBundle or a TextBundle.
-#[doc(hidden)]
-pub enum EitherBundle<L, R> {
-    Left(L),
-    Right(R),
-}
-
-impl<'a> From<&'a mut NodeBundle> for EitherBundle<&'a mut NodeBundle, &'a mut TextBundle> {
-    fn from(bundle: &'a mut NodeBundle) -> Self {
-        EitherBundle::Left(bundle)
-    }
-}
-
-impl<'a> From<&'a mut TextBundle> for EitherBundle<&'a mut NodeBundle, &'a mut TextBundle> {
-    fn from(bundle: &'a mut TextBundle) -> Self {
-        EitherBundle::Right(bundle)
     }
 }

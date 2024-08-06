@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Minor update on `BsmlClass`
+
 [unreleased]: https://github.com/PoOnesNerfect/bevy_bsml
 
 ## [0.14.1] - 2024-08-06
