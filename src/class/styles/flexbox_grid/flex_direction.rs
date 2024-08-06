@@ -6,10 +6,8 @@ pub const FLEX_COL: StyleClass = StyleClass::FlexDirection(FlexDirection::Column
 pub const FLEX_ROW_REVERSE: StyleClass = StyleClass::FlexDirection(FlexDirection::RowReverse);
 pub const FLEX_COL_REVERSE: StyleClass = StyleClass::FlexDirection(FlexDirection::ColumnReverse);
 
-impl ApplyClass for FlexDirection {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.flex_direction = *self;
+impl ApplyClass<FlexDirection> for Style {
+    fn apply_class(&mut self, class: &FlexDirection) {
+        self.flex_direction = *class;
     }
 }

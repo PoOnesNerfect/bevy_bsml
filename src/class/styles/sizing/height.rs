@@ -31,13 +31,11 @@ pub fn h_perc(percent: f32) -> StyleClass {
     StyleClass::Height(Height(Val::Percent(percent)))
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Height(pub Val);
 
-impl ApplyClass for Height {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.height = self.0;
+impl ApplyClass<Height> for Style {
+    fn apply_class(&mut self, class: &Height) {
+        self.height = class.0;
     }
 }

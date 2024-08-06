@@ -31,13 +31,11 @@ pub fn min_w_perc(percent: f32) -> StyleClass {
     StyleClass::MinWidth(MinWidth(Val::Percent(percent)))
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct MinWidth(pub Val);
 
-impl ApplyClass for MinWidth {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.min_width = self.0;
+impl ApplyClass<MinWidth> for Style {
+    fn apply_class(&mut self, class: &MinWidth) {
+        self.min_width = class.0;
     }
 }

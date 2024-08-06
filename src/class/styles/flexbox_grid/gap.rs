@@ -13,36 +13,30 @@ pub fn gap_y(px: f32) -> StyleClass {
     StyleClass::RowGap(RowGap(Val::Px(px)))
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Gap(Val);
 
-impl ApplyClass for Gap {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.row_gap = self.0;
-        component.column_gap = self.0;
+impl ApplyClass<Gap> for Style {
+    fn apply_class(&mut self, class: &Gap) {
+        self.row_gap = class.0;
+        self.column_gap = class.0;
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RowGap(Val);
 
-impl ApplyClass for RowGap {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.row_gap = self.0;
+impl ApplyClass<RowGap> for Style {
+    fn apply_class(&mut self, class: &RowGap) {
+        self.row_gap = class.0;
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ColGap(Val);
 
-impl ApplyClass for ColGap {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.column_gap = self.0;
+impl ApplyClass<ColGap> for Style {
+    fn apply_class(&mut self, class: &ColGap) {
+        self.column_gap = class.0;
     }
 }

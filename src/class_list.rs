@@ -1,35 +1,25 @@
 use crate::{
-    class::{
-        background_color::BackgroundColorClass, border_color::BorderColorClass, text::TextClass,
-        ApplyClass, ClassEnum, StyleClass,
-    },
-    BsmlNode,
+    class::{ApplyClass, BsmlClass},
+    Bsml,
 };
-use bevy::{
-    prelude::{App, Changed, Commands, Component, Entity, Or, Query, With},
-    ui::{Interaction, ZIndex},
-};
+use bevy::prelude::*;
 
 /// Bevy component: list of classes that apply the styles to UI Node.
 ///
 /// You can access this component in your system to change styles of a node.
-#[derive(Debug, Clone, Component)]
-pub struct ClassList<T>(Vec<(Interaction, T)>);
+#[derive(Debug, Clone, Component, Default)]
+pub struct BsmlClasses(pub Vec<(Interaction, BsmlClass)>);
 
-pub type StyleClassList = ClassList<StyleClass>;
-pub type BackgroundColorClassList = ClassList<BackgroundColorClass>;
-pub type BorderColorClassList = ClassList<BorderColorClass>;
-pub type ZIndexClassList = ClassList<ZIndex>;
-pub type TextClassList = ClassList<TextClass>;
+impl BsmlClasses {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 
-impl<T> ClassList<T> {
-    pub fn set<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
+    pub fn insert(&mut self, interaction: Interaction, class: impl Into<BsmlClass>) {
         let class = class.into();
 
-        let variant_eq = |a: &T, b: &T| std::mem::discriminant(&a) == std::mem::discriminant(&b);
-
         for (i, c) in &mut self.0 {
-            if *i == interaction && variant_eq(c, &class) {
+            if *i == interaction && c.eq_class_type(&class) {
                 *c = class;
                 return;
             }
@@ -38,83 +28,55 @@ impl<T> ClassList<T> {
         self.0.push((interaction, class));
     }
 
-    pub fn unset<F: Into<T>>(&mut self, interaction: Interaction, class: F) {
+    pub fn remove(&mut self, interaction: Interaction, class: impl Into<BsmlClass>) {
         let class = class.into();
 
-        let variant_eq = |a: &T, b: &T| std::mem::discriminant(&a) == std::mem::discriminant(&b);
-
         self.0
-            .retain(|(i, c)| *i != interaction || !variant_eq(c, &class));
+            .retain(|(i, c)| *i != interaction || !c.eq_class_type(&class));
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &(Interaction, BsmlClass)> {
+        self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut (Interaction, BsmlClass)> {
+        self.0.iter_mut()
     }
 }
 
-macros::impl_class_list_map!(
-    style: StyleClass => Style,
-    background_color: BackgroundColorClass => BackgroundColor,
-    border_color: BorderColorClass => BorderColor,
-    z_index: ZIndex => ZIndex,
-    text: TextClass => Text,
-);
-mod macros {
-    macro_rules! impl_class_list_map {
-    ($($f:ident : $t:ty => $i:ident),* $(,)?) => {
-        #[doc(hidden)]
-        #[derive(Debug, Default, Clone)]
-        pub struct ClassListMap {
-            $(pub $f: Option<ClassList<$t>>,)*
-        }
-
-        impl ClassListMap {
-            pub fn is_empty(&self) -> bool {
-                $(self.$f.is_none() &&)* true
+pub(super) fn apply_class_system(
+    mut query: Query<
+        (
+            &Interaction,
+            &BsmlClasses,
+            Option<&mut Style>,
+            Option<&mut Text>,
+            Option<&mut ZIndex>,
+            Option<&mut BorderColor>,
+            Option<&mut BackgroundColor>,
+        ),
+        (Or<(Changed<Interaction>, Changed<BsmlClasses>)>, With<Bsml>),
+    >,
+) {
+    for (interaction, classes, mut style, mut text, mut z_index, mut border_color, mut bg_color) in
+        &mut query
+    {
+        for (_, class) in classes.0.iter().filter(|(i, _)| i == interaction) {
+            if let Some(style) = &mut style {
+                style.apply_class(class);
             }
-
-            pub fn insert(&mut self, interaction: Interaction, class: ClassEnum) {
-                match class {
-                    $(ClassEnum::$i(class) => {
-                        if self.$f.is_none() {
-                            self.$f = Some(ClassList(Vec::new()));
-                        }
-
-                        self.$f.as_mut().unwrap().0.push((interaction, class));
-                    })*
-                }
+            if let Some(text) = &mut text {
+                text.apply_class(class);
             }
-
-            pub fn spawn(mut self, commands: &mut Commands, entity: Entity) {
-                let mut entity = commands.entity(entity);
-
-                $(if let Some(class_list) = self.$f.take() {
-                    entity.insert(class_list);
-                })*
+            if let Some(z_index) = &mut z_index {
+                z_index.apply_class(class);
             }
-
-            pub fn build_app(app: &mut App) {
-                app.add_systems(
-                    bevy::prelude::Update,
-                    (
-                        $(apply_class_system::<$t>,)*
-                    ),
-                );
-
-                fn apply_class_system<T: 'static + Send + Sync + ApplyClass>(
-                    mut query: Query<
-                        (&Interaction, &ClassList<T>, &mut T::Component),
-                        (Or<(Changed<Interaction>, Changed<ClassList<T>>)>, With<BsmlNode>),
-                    >,
-                ) {
-                    for (interaction, classes, mut component) in &mut query {
-                        for (i, c) in &classes.0 {
-                            if i == interaction {
-                                c.apply_class(&mut component);
-                            }
-                        }
-                    }
-                }
+            if let Some(border_color) = &mut border_color {
+                border_color.apply_class(class);
+            }
+            if let Some(bg_color) = &mut bg_color {
+                bg_color.apply_class(class);
             }
         }
-    };
     }
-
-    pub(super) use impl_class_list_map;
 }

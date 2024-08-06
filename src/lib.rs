@@ -1,35 +1,24 @@
 use bevy::{
     ecs::{system::EntityCommands, world::Command},
-    prelude::{despawn_with_children_recursive, App, Commands, Component, Entity, Plugin},
-    reflect::Reflect,
+    prelude::*,
 };
-use class_list::ClassListMap;
 
+#[doc(hidden)]
 pub use bevy;
+
 // used for solving hygiene issue when trying to access `self` in macro rules
 #[doc(hidden)]
 pub use replace_ident::replace_ident;
 
 pub mod class;
-pub mod class_list;
-pub use class_list::{
-    BackgroundColorClassList, BorderColorClassList, StyleClassList, TextClassList, ZIndexClassList,
-};
+mod class_list;
+
+pub use class_list::BsmlClasses;
 
 /// Contains all the items needed to use Bsml
 pub mod prelude {
-    pub use crate::{
-        bsml,
-        class::{
-            background_color::*, border_color::*, flexbox_grid::align_content::*,
-            flexbox_grid::align_items::*, flexbox_grid::flex_direction::*,
-            flexbox_grid::flex_wrap::*, flexbox_grid::gap::*, flexbox_grid::justify_content::*,
-            hovered, pressed, sizing::*, text::*, z_index::*,
-        },
-        class_list::*,
-        BsmlPlugin, SpawnBsml,
-    };
-    pub use bevy::prelude::default;
+    pub use crate::class::prelude::*;
+    pub use crate::{bsml, BsmlClasses, BsmlPlugin, SpawnBsml};
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -37,7 +26,10 @@ pub struct BsmlPlugin;
 
 impl Plugin for BsmlPlugin {
     fn build(&self, app: &mut App) {
-        ClassListMap::build_app(app);
+        app.add_systems(
+            PostUpdate,
+            class_list::apply_class_system.before(bevy::ui::UiSystem::Layout),
+        );
     }
 
     fn is_unique(&self) -> bool {
@@ -46,12 +38,12 @@ impl Plugin for BsmlPlugin {
 }
 
 pub trait SpawnBsml {
-    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'a>;
+    fn spawn_bsml<'a, T: BsmlElement>(&'a mut self, node: T) -> EntityCommands<'a>;
     fn despawn_bsml(&mut self, entity: Entity);
 }
 
 impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
-    fn spawn_bsml<'a, T: Bsml>(&'a mut self, node: T) -> EntityCommands<'a> {
+    fn spawn_bsml<'a, T: BsmlElement>(&'a mut self, node: T) -> EntityCommands<'a> {
         let entity = node.spawn(self, &[]);
         self.entity(entity)
     }
@@ -69,7 +61,7 @@ impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
     }
 }
 
-pub trait Bsml {
+pub trait BsmlElement {
     fn spawn(self, commands: &mut Commands, slot: &[Entity]) -> Entity;
 
     fn taking_slot(&self) -> bool {
@@ -79,7 +71,7 @@ pub trait Bsml {
 
 /// Marker component for bsml node
 #[derive(Debug, Clone, Component, Reflect)]
-pub struct BsmlNode;
+pub struct Bsml;
 
 #[macro_export]
 macro_rules! bsml {
@@ -90,7 +82,7 @@ macro_rules! bsml {
         __BsmlTag
     }};
     ($tag:ident; ($itag:ident $($attr:tt)*) $({$($content:tt)*})?) => {
-        impl $crate::Bsml for $tag {
+        impl $crate::BsmlElement for $tag {
             #[allow(unused_variables)]
             fn spawn(self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> $crate::bevy::ecs::entity::Entity {
                 #[allow(unused_imports)]
@@ -204,7 +196,7 @@ macro_rules! bsml {
     // handle attributes, spawn entity and return entity id
     (@spawn($this:ident, $commands:ident, $slot:ident, $bundle:ident) $(labels=[$($label:expr),* $(,)?])? $(class=[$($class:expr),* $(,)?])?) => {{
         #[allow(unused_mut)]
-        let mut __class_map = $crate::class_list::ClassListMap::default();
+        let mut __class_map = $crate::BsmlClasses::default();
 
         let labels = ($($(
             $crate::replace_ident!(self, $this, $label),
@@ -227,12 +219,11 @@ macro_rules! bsml {
         let __entity = $commands.spawn((
             $bundle,
             $crate::bevy::ui::Interaction::None,
-            $crate::BsmlNode,
+            $crate::Bsml,
             labels,
         ))
+        .insert(__class_map)
         .id();
-
-        __class_map.spawn($commands, __entity);
 
         __entity
     }};

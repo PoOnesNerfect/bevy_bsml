@@ -12,10 +12,8 @@ pub const CONTENT_SPACE_EVENLY: StyleClass = StyleClass::AlignContent(AlignConte
 pub const CONTENT_START: StyleClass = StyleClass::AlignContent(AlignContent::Start);
 pub const CONTENT_STRETCH: StyleClass = StyleClass::AlignContent(AlignContent::Stretch);
 
-impl ApplyClass for AlignContent {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.align_content = *self;
+impl ApplyClass<AlignContent> for Style {
+    fn apply_class(&mut self, class: &AlignContent) {
+        self.align_content = *class;
     }
 }

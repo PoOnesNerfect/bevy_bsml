@@ -30,14 +30,14 @@ bsml! {LoadingBar;
     }
 }
 
-fn loading_bar_system(mut query: Query<(&mut LoadPerc, &mut StyleClassList)>, time: Res<Time>) {
+fn loading_bar_system(mut query: Query<(&mut LoadPerc, &mut BsmlClasses)>, time: Res<Time>) {
     let (mut loaded, mut classes) = query.single_mut();
     loaded.timer.tick(time.delta());
 
     if loaded.timer.just_finished() {
-        classes.set(Interaction::None, w_perc(100.0));
+        classes.insert(Interaction::None, w_perc(100.0));
     } else if !loaded.timer.finished() {
-        classes.set(Interaction::None, w_perc(loaded.timer.fraction() * 100.0));
+        classes.insert(Interaction::None, w_perc(loaded.timer.fraction() * 100.0));
     }
 }
 

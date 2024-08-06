@@ -1,55 +1,45 @@
 use super::ApplyClass;
-use bevy::text::{JustifyText, Text};
 use derive_more::From;
 
-mod color;
+pub mod font_size;
+pub mod text_align;
+pub mod text_color;
 
-pub use color::*;
+pub(super) mod prelude {
+    pub use super::{font_size::*, text_align::*, text_color::*};
+    pub use bevy::text::Text;
+}
+use prelude::*;
 
-#[derive(Debug, Clone, From)]
+#[derive(Debug, Clone, From, PartialEq)]
 pub enum TextClass {
     FontSize(FontSize),
     JustifyText(JustifyText),
     TextColor(TextColor),
 }
 
-impl ApplyClass for TextClass {
-    type Component = Text;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        match self {
-            Self::FontSize(font_size) => font_size.apply_class(component),
-            Self::JustifyText(justify_text) => justify_text.apply_class(component),
-            Self::TextColor(text_color) => text_color.apply_class(component),
+impl ApplyClass<TextClass> for Text {
+    fn apply_class(&mut self, class: &TextClass) {
+        match class {
+            TextClass::FontSize(font_size) => self.apply_class(font_size),
+            TextClass::JustifyText(justify_text) => self.apply_class(justify_text),
+            TextClass::TextColor(text_color) => self.apply_class(text_color),
         }
     }
 }
 
-impl ApplyClass for JustifyText {
-    type Component = Text;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.justify = *self;
+impl From<FontSize> for super::BsmlClass {
+    fn from(val: FontSize) -> Self {
+        Self::Text(TextClass::FontSize(val))
     }
 }
-
-pub const TEXT_XS: TextClass = TextClass::FontSize(FontSize(12.0));
-pub const TEXT_SM: TextClass = TextClass::FontSize(FontSize(14.0));
-pub const TEXT_BASE: TextClass = TextClass::FontSize(FontSize(16.0));
-
-#[derive(Debug, Clone, Copy)]
-pub struct FontSize(f32);
-
-impl FontSize {
-    pub fn px(px: f32) -> TextClass {
-        TextClass::FontSize(Self(px))
+impl From<JustifyText> for super::BsmlClass {
+    fn from(val: JustifyText) -> Self {
+        Self::Text(TextClass::JustifyText(val))
     }
 }
-
-impl ApplyClass for FontSize {
-    type Component = Text;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.sections[0].style.font_size = self.0;
+impl From<TextColor> for super::BsmlClass {
+    fn from(val: TextColor) -> Self {
+        Self::Text(TextClass::TextColor(val))
     }
 }

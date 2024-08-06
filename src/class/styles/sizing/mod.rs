@@ -1,7 +1,8 @@
-mod height;
-mod min_width;
-mod width;
+pub mod height;
+pub mod max_width;
+pub mod min_width;
+pub mod width;
 
-pub use height::*;
-pub use min_width::*;
-pub use width::*;
+pub(super) mod prelude {
+    pub use super::{height::*, max_width::*, min_width::*, width::*};
+}

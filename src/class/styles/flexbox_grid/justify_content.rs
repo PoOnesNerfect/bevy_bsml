@@ -15,10 +15,8 @@ pub const JUSTIFY_SPACE_EVENLY: StyleClass =
 pub const JUSTIFY_START: StyleClass = StyleClass::JustifyContent(JustifyContent::Start);
 pub const JUSTIFY_STRETCH: StyleClass = StyleClass::JustifyContent(JustifyContent::Stretch);
 
-impl ApplyClass for JustifyContent {
-    type Component = Style;
-
-    fn apply_class(&self, component: &mut Self::Component) {
-        component.justify_content = *self;
+impl ApplyClass<JustifyContent> for Style {
+    fn apply_class(&mut self, class: &JustifyContent) {
+        self.justify_content = *class;
     }
 }

@@ -35,7 +35,7 @@ bsml! {MenuItem;
 // handle interactions with menu items
 fn menu_item_system(
     query: Query<(Entity, &Interaction, &MenuItem), Changed<Interaction>>,
-    mut classes: Query<&mut BackgroundColorClassList>,
+    mut classes: Query<&mut BsmlClasses>,
     mut exit: EventWriter<AppExit>,
 ) {
     for (entity, interaction, item) in query.iter() {
@@ -50,9 +50,9 @@ fn menu_item_system(
             if item.name == "Change Color" {
                 println!("changing color...");
                 let mut classes = classes.get_mut(entity).unwrap();
-                classes.set(Interaction::Pressed, BG_RED_700);
-                classes.set(Interaction::Hovered, BG_RED_600);
-                classes.set(Interaction::None, BG_RED_400);
+                classes.insert(Interaction::Pressed, BG_RED_700);
+                classes.insert(Interaction::Hovered, BG_RED_600);
+                classes.insert(Interaction::None, BG_RED_400);
                 return;
             }
         }
