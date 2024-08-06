@@ -21,9 +21,10 @@ pub mod prelude {
     pub use crate::{
         bsml,
         class::{
-            background_color::*, border_color::*, flexbox_grid::align_items::*,
-            flexbox_grid::flex_direction::*, flexbox_grid::flex_wrap::*, flexbox_grid::gap::*,
-            flexbox_grid::justify_content::*, hovered, pressed, sizing::*, text::*, z_index::*,
+            background_color::*, border_color::*, flexbox_grid::align_content::*,
+            flexbox_grid::align_items::*, flexbox_grid::flex_direction::*,
+            flexbox_grid::flex_wrap::*, flexbox_grid::gap::*, flexbox_grid::justify_content::*,
+            hovered, pressed, sizing::*, text::*, z_index::*,
         },
         class_list::*,
         BsmlPlugin, SpawnBsml,
