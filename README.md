@@ -15,6 +15,8 @@ To see the basic usages of bevy_bsml, check out examples:
 - [basic menu](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/basic_menu.rs)
 - [loading bar](https://github.com/poonesnerfect/bevy_bsml/blob/main/examples/loading_bar.rs)
 
+**For Breaking Changes and New Features, see [CHANGELOG.md](https://github.com/PoOnesNerfect/bevy_bsml/blob/main/CHANGELOG.md)**
+
 ## Table of Contents
 
 <!--toc:start-->
