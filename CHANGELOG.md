@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#5]: https://github.com/PoOnesNerfect/bevy_bsml/pull/5
 [examples directory]: https://github.com/PoOnesNerfect/bevy_bsml/tree/main/examples
-[0.14.1]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.0.8...v0.14.1
+[0.14.1]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.0...v0.14.1
 
 ## [0.14.0] - 2024-07-17
 
