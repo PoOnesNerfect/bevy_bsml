@@ -1,9 +1,10 @@
-use self::color::TextColor;
 use super::ApplyClass;
 use bevy::text::{JustifyText, Text};
 use derive_more::From;
 
-pub mod color;
+mod color;
+
+pub use color::*;
 
 #[derive(Debug, Clone, From)]
 pub enum TextClass {
