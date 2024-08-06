@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reorganized bsml macro for better readability
 - Renamed all instances of `Color::rgba` to `Color::Srgba`.
 - Renamed `ClassEnum` into a more fitting name, `BsmlClass`.
-- `fn apply_class_system`, which applies any interactions classes changes that happend in Bsml elements,
-  will not run in `PostUpdate` instead of `Update`.
+- `fn apply_class_system`, which applies any change in interaction and classes
+  will now run in `PostUpdate` instead of `Update`.
 - Add more tailwind classes:
   - MaxWidth
   - AlignItems
