@@ -297,6 +297,78 @@ pub struct MyText;
 (text labels=[MyText] class=[TEXT_XS]) { "I'm a tiny little text" }
 ```
 
+### img
+
+`(img)` element is used to render an image.
+
+This element is also different than other elements in that you cannot nest elements inside it.
+
+Instead, content inside `{...}` can be any expression that returns [UiImage](https://docs.rs/bevy/latest/bevy/prelude/struct.UiImage.html).
+
+Available attributes are [labels](#labels) and [class](#class).
+
+**Examples**:
+
+_basic_:
+
+```
+(img) { some_fn_returning_UiImage() }
+
+(img) { UiImage { color: ..., texture: ..., flip_x: false, flip_y: false } }
+```
+
+_with styling_:
+
+```
+(img class=[W_FULL]) { UiImage { color: ..., texture: ..., flip_x: false, flip_y: false } }
+```
+
+_with labels_:
+
+```rust
+#[derive(Component)]
+pub struct MyImg;
+```
+
+```
+(img labels=[MyImg] class=[W_FULL]) { UiImage { color: ..., texture: ..., flip_x: false, flip_y: false }
+```
+
+### material
+
+`(material)` element is used to render material in a ui Node; internally, it uses [MaterialNodeBundle](https://docs.rs/bevy/latest/bevy/prelude/struct.MaterialNodeBundle.html).
+
+This element is also different than other elements in that you cannot nest elements inside it.
+
+Instead, content inside `{...}` can be any expression that returns [Handle<M: UiMaterial>](https://docs.rs/bevy/latest/bevy/prelude/struct.UiImage.html).
+
+Available attributes are [labels](#labels) and [class](#class).
+
+**Examples**:
+
+_basic_:
+
+```
+(material) { some_fn_returning_material_handle() }
+```
+
+_with styling_:
+
+```
+(material class=[W_FULL]) { some_fn_returning_material_handle() }
+```
+
+_with labels_:
+
+```rust
+#[derive(Component)]
+pub struct MyMaterial;
+```
+
+```
+(material labels=[MyMaterial] class=[W_FULL]) { some_fn_returning_material_handle() }
+```
+
 ## Attributes in BSML
 
 ### class
@@ -394,7 +466,7 @@ pub struct Label {
 
 ```
 (node labels=[Label { text: "hello world", width: 100.0 }]) {
-    (text class=[w_px(labels.0.width)]) { "{}", labels.0.text }
+    (text class=[w(labels.0.width)]) { "{}", labels.0.text }
 }
 ```
 
@@ -416,7 +488,7 @@ pub struct MyComponent {
 }
 
 bsml! {MyComponent;
-    (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400]) {
+    (node class=[h(100.0), w(100.0), BG_BLUE_400]) {
         (text class=[TEXT_WHITE, TEXT_BASE]) { "index: {}, name: {}", self.i, self.name }
     }
 }
@@ -441,7 +513,7 @@ pub struct MyComponent {
 }
 
 bsml! {MyComponent;
-    (node class=[h_px(100.0), w_px(self.width), BG_BLUE_400]) {
+    (node class=[h(100.0), w(self.width), BG_BLUE_400]) {
         (text class=[TEXT_WHITE, TEXT_BASE]) { "index: {}, name: {}", self.i, self.name }
     }
 }
@@ -525,7 +597,7 @@ use bevy_bsml::prelude::*;
 fn spawn_bsml_ui(mut commands: Commands) {
     commands.spawn_bsml(bsml!(
         (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
-            (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+            (node class=[h(100.0), w(100.0), BG_BLUE_400])
         }
     ));
 }
@@ -546,7 +618,7 @@ fn spawn_bsml_ui(mut commands: Commands) {
     // spawn a screen using bsml!
     let entity = commands.spawn_bsml(bsml!(
         (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
-            (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+            (node class=[h(100.0), w(100.0), BG_BLUE_400])
         }
     ))
     .id();

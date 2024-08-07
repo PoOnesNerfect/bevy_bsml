@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.1...main
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.3...main
+
+## [0.14.3] - 2024-08-07
+
+- Added elements:
+  - `(img)`: `(img) { expr_returning_UiImage }`
+  - `(material)`: `(material) { expr_returning_Handle<M: Material> }`
+  - I haven't actually tested these, but they should work??
 
 ## [0.14.2] - 2024-08-07
 

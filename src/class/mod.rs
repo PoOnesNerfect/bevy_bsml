@@ -75,6 +75,13 @@ apply_class_to_bundle!(ImageBundle {
     focus_policy: FocusPolicy
 });
 
+apply_class_to_bundle!(MaterialNodeBundle<M: UiMaterial> {
+    style: Style,
+    visibility: Visibility,
+    z_index: ZIndex,
+    focus_policy: FocusPolicy
+});
+
 #[doc(hidden)]
 pub trait WithInteraction {
     fn with_interaction(self) -> (Interaction, BsmlClass);
@@ -143,8 +150,8 @@ mod macros {
     pub(super) use impl_bsml_class;
 
     macro_rules! apply_class_to_bundle {
-        ($bundle:ty {$($v:ident: $class:ident),*}) => {
-            impl ApplyClass<BsmlClass> for $bundle {
+        ($bundle:ident $(<$gen:ident $(: $trait:ident)?>)? {$($v:ident: $class:ident),*}) => {
+            impl $(<$gen $(: $trait)?>)? ApplyClass<BsmlClass> for $bundle $(<$gen>)? {
                 #[inline]
                 fn apply_class(&mut self, class: &BsmlClass) {
                     match class {

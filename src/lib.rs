@@ -157,6 +157,20 @@ macro_rules! bsml {
 
         $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
     }};
+    // handle (img) element
+    (@element($this:ident, $commands:ident, $slot:ident) (img $($attr:tt)*) {$image:expr}) => {{
+        let mut __bundle = $crate::bevy::prelude::ImageBundle::default();
+        __bundle.image = $image .into();
+
+        $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
+    }};
+    // handle (material) element
+    (@element($this:ident, $commands:ident, $slot:ident) (material $($attr:tt)*) {$material:expr}) => {{
+        let mut __bundle = $crate::bevy::prelude::MaterialBundle::default();
+        __bundle.material = $material .into();
+
+        $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
+    }};
     // handle (slot) element
     (@element($this:ident, $commands:ident, $slot:ident) (slot $($attr:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         #[allow(unused_mut)]
