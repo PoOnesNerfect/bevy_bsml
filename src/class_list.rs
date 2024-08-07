@@ -51,7 +51,7 @@ pub(super) fn apply_class_system(
     mut query: Query<
         (
             &Interaction,
-            &BsmlClasses,
+            Ref<BsmlClasses>,
             Option<&mut Style>,
             Option<&mut Text>,
             Option<&mut ZIndex>,
@@ -64,7 +64,7 @@ pub(super) fn apply_class_system(
     for (interaction, classes, mut style, mut text, mut z_index, mut border_color, mut bg_color) in
         &mut query
     {
-        for (_, class) in classes.0.iter().filter(|(i, _)| i == interaction) {
+        let mut update_styles = |(_, class): &(Interaction, BsmlClass)| {
             if let Some(style) = &mut style {
                 style.apply_class(class);
             }
@@ -80,6 +80,18 @@ pub(super) fn apply_class_system(
             if let Some(bg_color) = &mut bg_color {
                 bg_color.apply_class(class);
             }
+        };
+
+        // if classes changed, apply all classes
+        if classes.is_changed() {
+            classes.0.iter().for_each(&mut update_styles);
         }
+
+        // overwrite specific interaction classes
+        classes
+            .0
+            .iter()
+            .filter(|(i, _)| i == interaction)
+            .for_each(update_styles);
     }
 }

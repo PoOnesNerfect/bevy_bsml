@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.4...main
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.5...main
+
+## [0.14.6] - 2024-08-07
+
+- **Fixed**: When interacting with the element, other systems that updated the classes were not being applied.
+
+[0.14.6]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.5...v0.14.6
 
 ## [0.14.5] - 2024-08-07
 
