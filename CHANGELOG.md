@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `(material)`: `(material) { expr_returning_Handle<M: Material> }`
   - I haven't actually tested these, but they should work??
 
+[0.14.3]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.2...v0.14.3
+
 ## [0.14.2] - 2024-08-07
 
 - Minor update on `BsmlClass`
@@ -45,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: rename `*_px` into just `*`; for example, `w_px` into `w` and `top_px` into `top`
 - **BREAKING**: rename `*_perc` into `*_fract`
 - **BREAKING**: rename `*_FLEX_*` into `*_*`; for example, `ITEMS_FLEX_START` into `ITEMS_START`
+
+[0.14.2]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.1...v0.14.2
 
 ## [0.14.1] - 2024-08-06
 
