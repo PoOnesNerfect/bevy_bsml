@@ -1,27 +1,32 @@
-use self::{
-    background_color::BackgroundColorClass, border_color::BorderColorClass, text::TextClass,
-};
 use bevy::prelude::*;
 use derive_more::From;
+
+mod text;
+pub use text::*;
 
 mod styles;
 pub use styles::*;
 
-pub(super) mod prelude {
-    pub use super::background_color::*;
-    pub use super::border_color::*;
-    pub use super::styles_prelude::*;
-    pub use super::text::prelude::*;
-    pub use super::z_index::*;
-
-    pub use super::hovered;
-    pub use super::pressed;
-}
-
 pub mod background_color;
 pub mod border_color;
-pub mod text;
+pub mod focus_policy;
+pub mod visibility;
 pub mod z_index;
+
+pub(super) mod prelude {
+    pub use super::hovered;
+    pub use super::pressed;
+
+    pub use super::styles_prelude::*;
+    pub use super::text_prelude::*;
+
+    pub use super::background_color::*;
+    pub use super::border_color::*;
+    pub use super::focus_policy::*;
+    pub use super::visibility::*;
+    pub use super::z_index::*;
+}
+use prelude::*;
 
 pub fn hovered<C>(class: C) -> (Interaction, C) {
     (Interaction::Hovered, class)
@@ -31,35 +36,33 @@ pub fn pressed<C>(class: C) -> (Interaction, C) {
     (Interaction::Pressed, class)
 }
 
-/// A class that can be applied to a UI node.
-#[doc(hidden)]
-#[derive(Clone, Debug, From, PartialEq)]
-pub enum BsmlClass {
+impl_bsml_class!(
+    (enum) Style(StyleClass),
+    (enum) Text(TextClass),
     BackgroundColor(BackgroundColorClass),
     BorderColor(BorderColorClass),
-    Style(StyleClass),
+    Visibility(Visibility),
     ZIndex(ZIndex),
-    Text(TextClass),
-}
+    FocusPolicy(FocusPolicy)
+);
 
-impl BsmlClass {
-    /// Check if the class is of same type to another class.
-    #[inline]
-    pub(crate) fn eq_class_type(&self, other: &Self) -> bool {
-        match (self, other) {
-            (BsmlClass::BackgroundColor(_), BsmlClass::BackgroundColor(_)) => true,
-            (BsmlClass::BorderColor(_), BsmlClass::BorderColor(_)) => true,
-            (BsmlClass::ZIndex(_), BsmlClass::ZIndex(_)) => true,
-            (BsmlClass::Text(a), BsmlClass::Text(b)) => {
-                std::mem::discriminant(a) == std::mem::discriminant(b)
-            }
-            (BsmlClass::Style(a), BsmlClass::Style(b)) => {
-                std::mem::discriminant(a) == std::mem::discriminant(b)
-            }
-            _ => false,
-        }
-    }
-}
+apply_class_to_bundle!(NodeBundle {
+    style: Style,
+    background_color: BackgroundColor,
+    border_color: BorderColor,
+    visibility: Visibility,
+    z_index: ZIndex,
+    focus_policy: FocusPolicy
+});
+
+apply_class_to_bundle!(TextBundle {
+    style: Style,
+    text: Text,
+    background_color: BackgroundColor,
+    visibility: Visibility,
+    z_index: ZIndex,
+    focus_policy: FocusPolicy
+});
 
 #[doc(hidden)]
 pub trait WithInteraction {
@@ -84,78 +87,95 @@ pub trait ApplyClass<Class> {
     fn apply_class(&mut self, class: &Class);
 }
 
-impl ApplyClass<BsmlClass> for NodeBundle {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::BackgroundColor(class) => self.background_color.apply_class(class),
-            BsmlClass::BorderColor(class) => self.border_color.apply_class(class),
-            BsmlClass::Style(class) => self.style.apply_class(class),
-            BsmlClass::ZIndex(class) => self.z_index.apply_class(class),
-            BsmlClass::Text(_) => {}
-        }
-    }
-}
+use self::macros::*;
+mod macros {
+    macro_rules! impl_bsml_class {
+        ($($(($enum:ident))? $component:ident ($class:ident)),*) => {
+            /// A class that can be applied to a UI node.
+            #[doc(hidden)]
+            #[derive(Clone, Debug, From, PartialEq)]
+            pub enum BsmlClass {
+                $(
+                    $component ($class)
+                ),+
+            }
 
-impl ApplyClass<BsmlClass> for TextBundle {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::BackgroundColor(class) => self.background_color.apply_class(class),
-            BsmlClass::Style(class) => self.style.apply_class(class),
-            BsmlClass::ZIndex(class) => self.z_index.apply_class(class),
-            BsmlClass::Text(class) => self.text.apply_class(class),
-            BsmlClass::BorderColor(_) => {}
-        }
-    }
-}
+            impl BsmlClass {
+                /// Check if the class is of same type to another class.
+                #[allow(unused_variables)]
+                #[inline]
+                pub(crate) fn eq_class_type(&self, other: &Self) -> bool {
+                    match (self, other) {
+                        $(
+                            (BsmlClass:: $component (a), BsmlClass:: $component (b)) => impl_bsml_class!(@eq $($enum)? a b),
+                        )*
+                        _ => false
+                    }
+                }
+            }
 
-impl ApplyClass<BsmlClass> for Style {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::Style(class) => self.apply_class(class),
-            _ => {}
-        }
+            $(
+                impl ApplyClass<BsmlClass> for $component {
+                    #[inline]
+                    fn apply_class(&mut self, class: &BsmlClass) {
+                        match class {
+                            BsmlClass::$component(class) => self.apply_class(class),
+                            _ => {}
+                        }
+                    }
+                }
+            )*
+        };
+        (@eq enum $a:ident $b:ident) => { std::mem::discriminant($a) == std::mem::discriminant($b) };
+        (@eq $a:ident $b:ident) => { true };
     }
-}
+    pub(super) use impl_bsml_class;
 
-impl ApplyClass<BsmlClass> for Text {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::Text(class) => self.apply_class(class),
-            _ => {}
-        }
+    macro_rules! apply_class_to_bundle {
+        ($bundle:ty {$($v:ident: $class:ident),*}) => {
+            impl ApplyClass<BsmlClass> for $bundle {
+                #[inline]
+                fn apply_class(&mut self, class: &BsmlClass) {
+                    match class {
+                        $(
+                            BsmlClass::$class(val) => self.$v.apply_class(val),
+                        )*
+                        _ => {}
+                    }
+                }
+            }
+        };
     }
-}
+    pub(super) use apply_class_to_bundle;
 
-impl ApplyClass<BsmlClass> for BackgroundColor {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::BackgroundColor(color) => self.apply_class(color),
-            _ => {}
-        }
-    }
-}
+    macro_rules! impl_class {
+        ($class:ident -> $component:ident {$($v:ident ($t:ty)),*}) => {
+            #[doc(hidden)]
+            #[derive(Debug, Clone, From, PartialEq)]
+            pub enum $class  {
+                $($v($t)),*
+            }
 
-impl ApplyClass<BsmlClass> for BorderColor {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::BorderColor(color) => self.apply_class(color),
-            _ => {}
-        }
-    }
-}
+            $(
+                impl From<$t> for crate::class::BsmlClass {
+                    #[inline]
+                    fn from(val: $t) -> Self {
+                        Self::$component($class ::$v(val))
+                    }
+                }
+            )*
 
-impl ApplyClass<BsmlClass> for ZIndex {
-    #[inline]
-    fn apply_class(&mut self, class: &BsmlClass) {
-        match class {
-            BsmlClass::ZIndex(color) => self.apply_class(color),
-            _ => {}
-        }
+            impl crate::class::ApplyClass<$class> for $component {
+                #[inline]
+                fn apply_class(&mut self, class: &$class) {
+                    match class {
+                        $(
+                            $class ::$v(val) => self.apply_class(val),
+                        )*
+                    }
+                }
+            }
+        };
     }
+    pub(super) use impl_class;
 }

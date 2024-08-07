@@ -1,5 +1,6 @@
 use crate::class::ApplyClass;
-use bevy::ui::ZIndex;
+
+pub use bevy::ui::ZIndex;
 
 pub fn z_local(z: i32) -> ZIndex {
     ZIndex::Local(z)
