@@ -53,6 +53,7 @@ apply_class_to_bundle!(NodeBundle {
     style: Style,
     background_color: BackgroundColor,
     border_color: BorderColor,
+    border_radius: BorderRadius,
     visibility: Visibility,
     z_index: ZIndex,
     focus_policy: FocusPolicy

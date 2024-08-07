@@ -110,6 +110,7 @@ pub enum BorderRadiusClass {
 
 impl ApplyClass<BorderRadiusClass> for BorderRadius {
     fn apply_class(&mut self, class: &BorderRadiusClass) {
+        println!("applying class: {:?}", class);
         match class {
             BorderRadiusClass::All(val) => *self = BorderRadius::all(val.clone()),
             BorderRadiusClass::Top(val) => {

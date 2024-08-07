@@ -25,7 +25,7 @@ bsml! {MenuItem;
     (slot
         class=[
             w(self.width), h(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800),
-            JUSTIFY_CENTER, ITEMS_CENTER
+            JUSTIFY_CENTER, ITEMS_CENTER, ROUNDED_FULL, border(5.0)
         ]
     ) {
         (text class=[TEXT_BASE]) { "{}", self.name }

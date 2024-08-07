@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.3...main
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.4...main
+
+## [0.14.4] - 2024-08-07
+
+- **Fixed**: `BorderRadius` was not being applied.
+
+[0.14.4]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.3...v0.14.4
 
 ## [0.14.3] - 2024-08-07
 
