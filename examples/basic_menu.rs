@@ -24,7 +24,7 @@ pub struct MenuItem {
 bsml! {MenuItem;
     (slot
         class=[
-            w_px(self.width), h_px(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800),
+            w(self.width), h(75.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800),
             JUSTIFY_CENTER, ITEMS_CENTER
         ]
     ) {

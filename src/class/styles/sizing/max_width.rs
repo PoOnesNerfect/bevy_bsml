@@ -7,7 +7,7 @@ pub const MAX_W_SCREEN: MaxWidth = MaxWidth(Val::Vw(100.0));
 pub const MAX_W_SVW: MaxWidth = MaxWidth(Val::VMin(100.0));
 pub const MAX_W_LVW: MaxWidth = MaxWidth(Val::VMax(100.0));
 
-pub fn max_w_px(px: f32) -> MaxWidth {
+pub fn max_w(px: f32) -> MaxWidth {
     MaxWidth(Val::Px(px))
 }
 
@@ -27,7 +27,7 @@ pub fn max_w_div(n: u32, d: u32) -> MaxWidth {
     MaxWidth(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn max_w_perc(percent: f32) -> MaxWidth {
+pub fn max_w_fract(percent: f32) -> MaxWidth {
     MaxWidth(Val::Percent(percent))
 }
 

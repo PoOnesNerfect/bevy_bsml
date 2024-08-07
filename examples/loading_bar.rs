@@ -21,11 +21,11 @@ impl Default for LoadPerc {
 
 bsml! {LoadingBar;
     (node
-        class=[w_px(300.0), h_px(30.0), BG_SLATE_400]
+        class=[w(300.0), h(30.0), BG_SLATE_400]
     ) {
         (node
             labels=[LoadPerc::default()]
-            class=[w_perc(0.0), H_FULL, BG_BLUE_400]
+            class=[w_fract(0.0), H_FULL, BG_BLUE_400]
         )
     }
 }
@@ -35,9 +35,9 @@ fn loading_bar_system(mut query: Query<(&mut LoadPerc, &mut BsmlClasses)>, time:
     loaded.timer.tick(time.delta());
 
     if loaded.timer.just_finished() {
-        classes.insert(Interaction::None, w_perc(100.0));
+        classes.insert(Interaction::None, w_fract(100.0));
     } else if !loaded.timer.finished() {
-        classes.insert(Interaction::None, w_perc(loaded.timer.fraction() * 100.0));
+        classes.insert(Interaction::None, w_fract(loaded.timer.fraction() * 100.0));
     }
 }
 

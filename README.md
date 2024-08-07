@@ -147,21 +147,21 @@ Available attributes are [labels](#labels) and [class](#class).
 _100x100px blue box with no nested elements_:
 
 ```
-(node class=[w_px(100.0), h_px(100.0), BG_BLUE_400])
+(node class=[w(100.0), h(100.0), BG_BLUE_400])
 ```
 
 _centering a node_:
 
 ```
 (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER]) {
-    (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+    (node class=[h(100.0), w(100.0), BG_BLUE_400])
 }
 ```
 
 _text in the blue box_:
 
 ```
-(node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
+(node class=[w(100.0), h(100.0), BG_BLUE_400]) {
     (text class=[TEXT_WHITE]}) { "hello world" }
 }
 ```
@@ -174,7 +174,7 @@ pub struct MyNode { i: u8 }
 ```
 
 ```
-(node labels=[MyNode { i: 0 }] class=[w_px(100.0), h_px(100.0), BG_BLUE_400])
+(node labels=[MyNode { i: 0 }] class=[w(100.0), h(100.0), BG_BLUE_400])
 ```
 
 ### for
@@ -203,7 +203,7 @@ _simple menu screen_:
     {name in ["Continue", "Setting", "Exit"]}
     class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]
 ) {
-    (node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
+    (node class=[w(100.0), h(100.0), BG_BLUE_400]) {
         (text class=[TEXT_BASE]) { "{}", name }
     }
 }
@@ -216,7 +216,7 @@ _simple menu screen with index_:
     {i, name in ["Continue", "Setting", "Exit"]}
     class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_WHITE]
 ) {
-    (node class=[w_px(100.0), h_px(100.0), BG_BLUE_400]) {
+    (node class=[w(100.0), h(100.0), BG_BLUE_400]) {
         (text class=[TEXT_BASE]) { "{}: {}", i, name }
     }
 }
@@ -241,7 +241,7 @@ pub struct MyButton;
 
 // define a button component
 bsml!{MyButton;
-    (slot class=[w_px(100.0), h_px(100.0), BG_BLUE_400, hovered(BG_BLUE_600)]) {
+    (slot class=[w(100.0), h(100.0), BG_BLUE_400, hovered(BG_BLUE_600)]) {
         (text class=[TEXT_WHITE]) { "I am button" } // default content
     }
 }
@@ -310,7 +310,7 @@ or any expressions that return of one: [StyleClass], [BackgroundColorClass], [Bo
 
 ```
 (node class=[W_FULL, H_FULL, JUSTIFY_CENTER, ITEMS_CENTER, BG_TRANSPARENT]) {
-    (node class=[h_px(100.0), w_px(100.0), BG_BLUE_400])
+    (node class=[h(100.0), w(100.0), BG_BLUE_400])
 }
 ```
 
@@ -322,7 +322,7 @@ The inner node will be 100x100px with blue background color.
 You can specify styles that are applied when the node is hovered or pressed, like in tailwindcss.
 
 ```
-(node class=[h_px(100.0), w_px(100.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800)])
+(node class=[h(100.0), w(100.0), BG_BLUE_400, hovered(BG_BLUE_600), pressed(BG_BLUE_800)])
 ```
 
 **caveat**: if you plan to use `hovered` or `pressed` style classes, you must specify also specify the base class,

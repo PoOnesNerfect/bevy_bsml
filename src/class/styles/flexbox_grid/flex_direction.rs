@@ -1,5 +1,7 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{FlexDirection, Style};
+use bevy::ui::Style;
+
+pub use bevy::ui::FlexDirection;
 
 pub const FLEX_ROW: StyleClass = StyleClass::FlexDirection(FlexDirection::Row);
 pub const FLEX_COL: StyleClass = StyleClass::FlexDirection(FlexDirection::Column);

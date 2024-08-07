@@ -428,7 +428,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_bsml"
-version = "0.14.1"
+version = "0.14.2"
 dependencies = [
  "bevy",
  "derive_more",

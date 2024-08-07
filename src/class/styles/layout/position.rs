@@ -1,5 +1,7 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{PositionType, Style};
+use bevy::ui::Style;
+
+pub use bevy::ui::PositionType;
 
 pub const ABSOLUTE: StyleClass = StyleClass::PositionType(PositionType::Absolute);
 pub const RELATIVE: StyleClass = StyleClass::PositionType(PositionType::Relative);

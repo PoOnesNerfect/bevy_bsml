@@ -1,5 +1,7 @@
 use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::{FlexWrap, Style};
+use bevy::ui::Style;
+
+pub use bevy::ui::FlexWrap;
 
 pub const FLEX_WRAP: StyleClass = StyleClass::FlexWrap(FlexWrap::Wrap);
 pub const FLEX_WRAP_REVERSE: StyleClass = StyleClass::FlexWrap(FlexWrap::WrapReverse);

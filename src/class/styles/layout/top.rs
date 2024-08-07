@@ -5,7 +5,7 @@ pub const TOP_0: Top = Top(Val::Px(0.0));
 pub const TOP_AUTO: Top = Top(Val::Auto);
 pub const TOP_FULL: Top = Top(Val::Percent(100.0));
 
-pub fn top_px(px: f32) -> StyleClass {
+pub fn top(px: f32) -> StyleClass {
     StyleClass::Top(Top(Val::Px(px)))
 }
 
@@ -25,7 +25,7 @@ pub fn top_div(n: u32, d: u32) -> StyleClass {
     StyleClass::Top(Top(Val::Percent((n as f32 / d as f32) * 100.0)))
 }
 
-pub fn top_perc(percent: f32) -> StyleClass {
+pub fn top_fract(percent: f32) -> StyleClass {
     StyleClass::Top(Top(Val::Percent(percent)))
 }
 

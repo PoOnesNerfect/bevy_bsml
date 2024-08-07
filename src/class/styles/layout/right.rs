@@ -5,7 +5,7 @@ pub const RIGHT_0: Right = Right(Val::Px(0.0));
 pub const RIGHT_AUTO: Right = Right(Val::Auto);
 pub const RIGHT_FULL: Right = Right(Val::Percent(100.0));
 
-pub fn right_px(px: f32) -> StyleClass {
+pub fn right(px: f32) -> StyleClass {
     StyleClass::Right(Right(Val::Px(px)))
 }
 
@@ -25,7 +25,7 @@ pub fn right_div(n: u32, d: u32) -> StyleClass {
     StyleClass::Right(Right(Val::Percent((n as f32 / d as f32) * 100.0)))
 }
 
-pub fn right_perc(percent: f32) -> StyleClass {
+pub fn right_fract(percent: f32) -> StyleClass {
     StyleClass::Right(Right(Val::Percent(percent)))
 }
 

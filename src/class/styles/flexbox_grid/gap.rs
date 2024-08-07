@@ -1,16 +1,16 @@
-use crate::class::{styles::StyleClass, ApplyClass};
+use crate::class::ApplyClass;
 use bevy::ui::{Style, Val};
 
-pub fn gap(px: f32) -> StyleClass {
-    StyleClass::Gap(Gap(Val::Px(px)))
+pub fn gap(px: f32) -> Gap {
+    Gap(Val::Px(px))
 }
 
-pub fn gap_x(px: f32) -> StyleClass {
-    StyleClass::ColGap(ColGap(Val::Px(px)))
+pub fn gap_x(px: f32) -> ColGap {
+    ColGap(Val::Px(px))
 }
 
-pub fn gap_y(px: f32) -> StyleClass {
-    StyleClass::RowGap(RowGap(Val::Px(px)))
+pub fn gap_y(px: f32) -> RowGap {
+    RowGap(Val::Px(px))
 }
 
 #[derive(Debug, Clone, PartialEq)]

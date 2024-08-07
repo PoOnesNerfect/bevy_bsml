@@ -9,9 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Minor update on `BsmlClass`
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.1...main
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml
+## [0.14.2] - 2024-08-07
+
+- Minor update on `BsmlClass`
+- Refactor `BsmlClass` to be more maintainable
+- Add more classes:
+  - margin
+  - padding
+  - min height
+  - max height
+  - overflow
+  - display
+  - justify items
+  - align self
+  - direction
+  - flex basis, grow, shrink
+  - border width
+  - border radius
+  - grid auto columns
+  - grid auto rows
+  - grid auto flow
+  - grid col
+  - grid row
+  - grid template columns
+  - grid template rows
+- **BREAKING**: rename `*_px` into just `*`; for example, `w_px` into `w` and `top_px` into `top`
+- **BREAKING**: rename `*_perc` into `*_fract`
+- **BREAKING**: rename `*_FLEX_*` into `*_*`; for example, `ITEMS_FLEX_START` into `ITEMS_START`
 
 ## [0.14.1] - 2024-08-06
 

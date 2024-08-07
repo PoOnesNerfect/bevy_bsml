@@ -5,7 +5,7 @@ pub const LEFT_0: Left = Left(Val::Px(0.0));
 pub const LEFT_AUTO: Left = Left(Val::Auto);
 pub const LEFT_FULL: Left = Left(Val::Percent(100.0));
 
-pub fn left_px(px: f32) -> StyleClass {
+pub fn left(px: f32) -> StyleClass {
     StyleClass::Left(Left(Val::Px(px)))
 }
 
@@ -25,7 +25,7 @@ pub fn left_div(n: u32, d: u32) -> StyleClass {
     StyleClass::Left(Left(Val::Percent((n as f32 / d as f32) * 100.0)))
 }
 
-pub fn left_perc(percent: f32) -> StyleClass {
+pub fn left_fract(percent: f32) -> StyleClass {
     StyleClass::Left(Left(Val::Percent(percent)))
 }
 

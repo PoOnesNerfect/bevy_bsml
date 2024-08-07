@@ -9,6 +9,7 @@ pub use styles::*;
 
 pub mod background_color;
 pub mod border_color;
+pub mod border_radius;
 pub mod focus_policy;
 pub mod visibility;
 pub mod z_index;
@@ -22,6 +23,7 @@ pub(super) mod prelude {
 
     pub use super::background_color::*;
     pub use super::border_color::*;
+    pub use super::border_radius::*;
     pub use super::focus_policy::*;
     pub use super::visibility::*;
     pub use super::z_index::*;
@@ -41,6 +43,7 @@ impl_bsml_class!(
     (enum) Text(TextClass),
     BackgroundColor(BackgroundColorClass),
     BorderColor(BorderColorClass),
+    BorderRadius(BorderRadiusClass),
     Visibility(Visibility),
     ZIndex(ZIndex),
     FocusPolicy(FocusPolicy)
@@ -58,6 +61,14 @@ apply_class_to_bundle!(NodeBundle {
 apply_class_to_bundle!(TextBundle {
     style: Style,
     text: Text,
+    background_color: BackgroundColor,
+    visibility: Visibility,
+    z_index: ZIndex,
+    focus_policy: FocusPolicy
+});
+
+apply_class_to_bundle!(ImageBundle {
+    style: Style,
     background_color: BackgroundColor,
     visibility: Visibility,
     z_index: ZIndex,
