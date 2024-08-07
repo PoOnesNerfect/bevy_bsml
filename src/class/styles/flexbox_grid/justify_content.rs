@@ -1,16 +1,16 @@
-use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::Style;
+use crate::class::ApplyClass;
+use bevy_ui::Style;
 
-pub use bevy::ui::JustifyContent;
+pub use bevy_ui::JustifyContent;
 
-pub const JUSTIFY_CENTER: StyleClass = StyleClass::JustifyContent(JustifyContent::Center);
-pub const JUSTIFY_DEFAULT: StyleClass = StyleClass::JustifyContent(JustifyContent::Default);
-pub const JUSTIFY_END: StyleClass = StyleClass::JustifyContent(JustifyContent::FlexEnd);
-pub const JUSTIFY_START: StyleClass = StyleClass::JustifyContent(JustifyContent::FlexStart);
-pub const JUSTIFY_AROUND: StyleClass = StyleClass::JustifyContent(JustifyContent::SpaceAround);
-pub const JUSTIFY_BETWEEN: StyleClass = StyleClass::JustifyContent(JustifyContent::SpaceBetween);
-pub const JUSTIFY_EVENLY: StyleClass = StyleClass::JustifyContent(JustifyContent::SpaceEvenly);
-pub const JUSTIFY_STRETCH: StyleClass = StyleClass::JustifyContent(JustifyContent::Stretch);
+pub const JUSTIFY_CENTER: JustifyContent = JustifyContent::Center;
+pub const JUSTIFY_DEFAULT: JustifyContent = JustifyContent::Default;
+pub const JUSTIFY_END: JustifyContent = JustifyContent::FlexEnd;
+pub const JUSTIFY_START: JustifyContent = JustifyContent::FlexStart;
+pub const JUSTIFY_AROUND: JustifyContent = JustifyContent::SpaceAround;
+pub const JUSTIFY_BETWEEN: JustifyContent = JustifyContent::SpaceBetween;
+pub const JUSTIFY_EVENLY: JustifyContent = JustifyContent::SpaceEvenly;
+pub const JUSTIFY_STRETCH: JustifyContent = JustifyContent::Stretch;
 
 impl ApplyClass<JustifyContent> for Style {
     fn apply_class(&mut self, class: &JustifyContent) {

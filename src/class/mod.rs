@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy_ui::{
+    node_bundles::{ImageBundle, MaterialNodeBundle, NodeBundle, TextBundle},
+    BackgroundColor, BorderColor, Interaction, UiMaterial,
+};
 use derive_more::From;
 
 mod text;

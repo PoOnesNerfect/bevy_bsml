@@ -1,4 +1,4 @@
-pub use bevy::ui::AlignSelf;
+pub use bevy_ui::AlignSelf;
 
 use crate::class::ApplyClass;
 
@@ -17,7 +17,7 @@ pub const SELF_BASELINE: AlignSelf = AlignSelf::Baseline;
 /// This item will be stretched to fill the container.
 pub const SELF_STRETCH: AlignSelf = AlignSelf::Stretch;
 
-impl ApplyClass<AlignSelf> for bevy::ui::Style {
+impl ApplyClass<AlignSelf> for bevy_ui::Style {
     fn apply_class(&mut self, class: &AlignSelf) {
         self.align_self = *class;
     }

@@ -4,7 +4,7 @@
 //! <https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns>
 
 use crate::class::ApplyClass;
-use bevy::ui::{RepeatedGridTrack, Style};
+use bevy_ui::{RepeatedGridTrack, Style};
 use derive_more::From;
 
 #[derive(Debug, Clone, From, PartialEq)]

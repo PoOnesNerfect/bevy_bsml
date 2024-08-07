@@ -1,10 +1,18 @@
-use bevy::{
-    ecs::{system::EntityCommands, world::Command},
-    prelude::*,
-};
+use bevy_app::prelude::*;
+use bevy_ecs::{prelude::*, system::EntityCommands, world::Command};
+
+use bevy_hierarchy::despawn_with_children_recursive;
+#[doc(hidden)]
+pub use bevy_ui;
 
 #[doc(hidden)]
-pub use bevy;
+pub use bevy_ecs;
+
+#[doc(hidden)]
+pub use bevy_hierarchy;
+
+#[doc(hidden)]
+pub use bevy_text;
 
 // used for solving hygiene issue when trying to access `self` in macro rules
 #[doc(hidden)]
@@ -28,7 +36,7 @@ impl Plugin for BsmlPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             PostUpdate,
-            class_list::apply_class_system.before(bevy::ui::UiSystem::Layout),
+            class_list::apply_class_system.before(bevy_ui::UiSystem::Layout),
         );
     }
 
@@ -42,7 +50,7 @@ pub trait SpawnBsml {
     fn despawn_bsml(&mut self, entity: Entity);
 }
 
-impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
+impl<'w, 's> SpawnBsml for bevy_ecs::system::Commands<'w, 's> {
     fn spawn_bsml<'a, T: BsmlElement>(&'a mut self, node: T) -> EntityCommands<'a> {
         let entity = node.spawn(self, &[]);
         self.entity(entity)
@@ -52,7 +60,7 @@ impl<'w, 's> SpawnBsml for bevy::ecs::system::Commands<'w, 's> {
         struct BsmlCommand(Entity);
 
         impl Command for BsmlCommand {
-            fn apply(self, world: &mut bevy::prelude::World) {
+            fn apply(self, world: &mut World) {
                 despawn_with_children_recursive(world, self.0);
             }
         }
@@ -70,13 +78,13 @@ pub trait BsmlElement {
 }
 
 /// Marker component for bsml node
-#[derive(Debug, Clone, Component, Reflect)]
+#[derive(Debug, Clone, Component)]
 pub struct Bsml;
 
 #[macro_export]
 macro_rules! bsml {
     (($itag:ident $($attr:tt)*) $({$($content:tt)*})?) => {{
-        #[derive($crate::bevy::prelude::Component, Clone, Copy)]
+        #[derive($crate::bevy_ecs::component::Component, Clone, Copy)]
         pub struct __BsmlTag;
         $crate::bsml!(__BsmlTag; ($itag $($attr)*) $({$($content)*})?);
         __BsmlTag
@@ -84,10 +92,10 @@ macro_rules! bsml {
     ($tag:ident; ($itag:ident $($attr:tt)*) $({$($content:tt)*})?) => {
         impl $crate::BsmlElement for $tag {
             #[allow(unused_variables)]
-            fn spawn(self, commands: &mut $crate::bevy::ecs::system::Commands, slot: &[$crate::bevy::ecs::entity::Entity]) -> $crate::bevy::ecs::entity::Entity {
+            fn spawn(self, commands: &mut $crate::bevy_ecs::system::Commands, slot: &[$crate::bevy_ecs::entity::Entity]) -> $crate::bevy_ecs::entity::Entity {
                 #[allow(unused_imports)]
                 use $crate::class::ApplyClass;
-                use $crate::bevy::hierarchy::BuildChildren;
+                use $crate::bevy_hierarchy::BuildChildren;
 
                 let this = &self;
                 let __entity = $crate::bsml!(@element(this, commands, slot) ($itag $($attr)*) $({$($content)*})?);
@@ -102,7 +110,7 @@ macro_rules! bsml {
     // handle (node) element
     (@element($this:ident, $commands:ident, $slot:ident) (node $($attr:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         #[allow(unused_mut)]
-        let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
+        let mut __bundle = $crate::bevy_ui::node_bundles::NodeBundle::default();
 
         let __entity = $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*);
 
@@ -117,7 +125,7 @@ macro_rules! bsml {
     // handle (for) element with enumeration
     (@element($this:ident, $commands:ident, $slot:ident) (for {$i:ident, $v:ident in $iter:expr} $($attr:tt)*) {$(($($def:tt)+) $({$($imp:tt)*})?)*}) => {{
         #[allow(unused_mut)]
-        let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
+        let mut __bundle = $crate::bevy_ui::node_bundles::NodeBundle::default();
 
         let __entity = $crate::bsml!(@spawn($this, $commands, $slot) $($attr)*);
 
@@ -134,7 +142,7 @@ macro_rules! bsml {
     // handle (for) element
     (@element($this:ident, $commands:ident, $slot:ident) (for {$v:ident in $iter:expr} $($attr:tt)*) {$(($($def:tt)+) $({$($imp:tt)*})?)*}) => {{
         #[allow(unused_mut)]
-        let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
+        let mut __bundle = $crate::bevy_ui::node_bundles::NodeBundle::default();
 
         let __entity = $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*);
 
@@ -150,23 +158,23 @@ macro_rules! bsml {
     }};
     // handle (text) element
     (@element($this:ident, $commands:ident, $slot:ident) (text $($attr:tt)*) {$literal:expr $(,$value:expr)*}) => {{
-        let mut __bundle = $crate::bevy::prelude::TextBundle::from_section(
+        let mut __bundle = $crate::bevy_ui::node_bundles::TextBundle::from_section(
             format!($literal $(, $crate::replace_ident!(labels, labels_ref, $crate::replace_ident!(self, $this, $value)))*),
-            $crate::bevy::text::TextStyle::default()
+            $crate::bevy_text::TextStyle::default()
         );
 
         $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
     }};
     // handle (img) element
     (@element($this:ident, $commands:ident, $slot:ident) (img $($attr:tt)*) {$image:expr}) => {{
-        let mut __bundle = $crate::bevy::prelude::ImageBundle::default();
+        let mut __bundle = $crate::bevy_ui::ImageBundle::default();
         __bundle.image = $image .into();
 
         $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
     }};
     // handle (material) element
     (@element($this:ident, $commands:ident, $slot:ident) (material $($attr:tt)*) {$material:expr}) => {{
-        let mut __bundle = $crate::bevy::prelude::MaterialBundle::default();
+        let mut __bundle = $crate::bevy_ui::MaterialBundle::default();
         __bundle.material = $material .into();
 
         $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
@@ -174,7 +182,7 @@ macro_rules! bsml {
     // handle (slot) element
     (@element($this:ident, $commands:ident, $slot:ident) (slot $($attr:tt)*) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         #[allow(unused_mut)]
-        let mut __bundle = $crate::bevy::ui::node_bundles::NodeBundle::default();
+        let mut __bundle = $crate::bevy_ui::node_bundles::NodeBundle::default();
 
         let __entity = $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*);
 
@@ -222,7 +230,7 @@ macro_rules! bsml {
             $(
                 let (__interaction, mut __class) = $crate::replace_ident!(labels, labels_ref, $crate::replace_ident!(self, $this, $class)).with_interaction();
 
-                if __interaction == $crate::bevy::ui::Interaction::None {
+                if __interaction == $crate::bevy_ui::Interaction::None {
                     $bundle .apply_class(&__class);
                 }
 
@@ -232,7 +240,7 @@ macro_rules! bsml {
 
         let __entity = $commands.spawn((
             $bundle,
-            $crate::bevy::ui::Interaction::None,
+            $crate::bevy_ui::Interaction::None,
             $crate::Bsml,
             labels,
         ))

@@ -1,6 +1,6 @@
 use crate::class::ApplyClass;
 
-pub use bevy::render::view::Visibility;
+pub use bevy_render::view::Visibility;
 
 /// Show the node.
 pub const VISIBLE: Visibility = Visibility::Visible;

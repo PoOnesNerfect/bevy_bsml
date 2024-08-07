@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{GridTrack, Style};
+use bevy_ui::{GridTrack, Style};
 use derive_more::From;
 
 pub const AUTO_ROWS_AUTO: GridAutoRows = GridAutoRows(GridTrack::DEFAULT);

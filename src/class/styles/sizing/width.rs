@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub const W_AUTO: Width = Width(Val::Auto);
 pub const W_FULL: Width = Width(Val::Percent(100.0));

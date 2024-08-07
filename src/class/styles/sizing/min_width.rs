@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub const MIN_W_AUTO: MinWidth = MinWidth(Val::Auto);
 pub const MIN_W_FULL: MinWidth = MinWidth(Val::Percent(100.0));

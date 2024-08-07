@@ -18,7 +18,7 @@ pub(super) mod styles_prelude {
     pub use super::sizing::prelude::*;
     pub use super::spacing::prelude::*;
 
-    pub use bevy::ui::Style;
+    pub use bevy_ui::Style;
 }
 use styles_prelude::*;
 

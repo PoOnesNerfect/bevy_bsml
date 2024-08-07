@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, UiRect, Val};
+use bevy_ui::{Style, UiRect, Val};
 
 /// padding in px
 pub fn p(px: f32) -> Padding {

@@ -1,7 +1,7 @@
 use crate::class::ApplyClass;
-use bevy::ui::Style;
+use bevy_ui::Style;
 
-pub use bevy::ui::GridAutoFlow;
+pub use bevy_ui::GridAutoFlow;
 
 pub const GRID_FLOW_ROW: GridAutoFlow = GridAutoFlow::Row;
 pub const GRID_FLOW_COLUMN: GridAutoFlow = GridAutoFlow::Column;

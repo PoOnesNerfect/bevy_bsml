@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, UiRect, Val};
+use bevy_ui::{Style, UiRect, Val};
 
 /// Margin in px
 pub fn m(px: f32) -> Margin {

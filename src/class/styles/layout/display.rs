@@ -1,8 +1,7 @@
-use bevy::prelude::*;
-
-pub use bevy::prelude::Display;
-
 use crate::class::ApplyClass;
+use bevy_ui::Style;
+
+pub use bevy_ui::Display;
 
 pub const FLEX: Display = Display::Flex;
 pub const BLOCK: Display = Display::Block;

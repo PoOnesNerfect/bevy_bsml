@@ -1,10 +1,10 @@
-use crate::class::{styles::StyleClass, ApplyClass};
-use bevy::ui::Style;
+use crate::class::ApplyClass;
+use bevy_ui::Style;
 
-pub use bevy::ui::PositionType;
+pub use bevy_ui::PositionType;
 
-pub const ABSOLUTE: StyleClass = StyleClass::PositionType(PositionType::Absolute);
-pub const RELATIVE: StyleClass = StyleClass::PositionType(PositionType::Relative);
+pub const ABSOLUTE: PositionType = PositionType::Absolute;
+pub const RELATIVE: PositionType = PositionType::Relative;
 
 impl ApplyClass<PositionType> for Style {
     fn apply_class(&mut self, class: &PositionType) {

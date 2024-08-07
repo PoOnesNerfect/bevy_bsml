@@ -1,5 +1,5 @@
 use super::ApplyClass;
-use bevy::text::Text;
+use bevy_text::Text;
 
 pub const TEXT_XS: FontSize = FontSize(12.0);
 pub const TEXT_SM: FontSize = FontSize(14.0);

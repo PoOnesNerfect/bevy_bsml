@@ -5,9 +5,9 @@
 //! <https://developer.mozilla.org/en-US/docs/Web/CSS/justify-self>
 
 use crate::class::ApplyClass;
-use bevy::ui::Style;
+use bevy_ui::Style;
 
-pub use bevy::ui::JustifySelf;
+pub use bevy_ui::JustifySelf;
 
 /// Use the parent node's [`JustifyItems`] value to determine how this item should be aligned.
 pub const JUSTIFY_SELF_AUTO: JustifySelf = JustifySelf::Auto;

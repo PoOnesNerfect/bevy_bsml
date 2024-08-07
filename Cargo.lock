@@ -428,9 +428,16 @@ dependencies = [
 
 [[package]]
 name = "bevy_bsml"
-version = "0.14.4"
+version = "0.14.5"
 dependencies = [
  "bevy",
+ "bevy_app",
+ "bevy_color",
+ "bevy_ecs",
+ "bevy_hierarchy",
+ "bevy_render",
+ "bevy_text",
+ "bevy_ui",
  "derive_more",
  "replace_ident",
 ]
@@ -1868,7 +1875,7 @@ dependencies = [
  "vec_map",
  "wasm-bindgen",
  "web-sys",
- "windows 0.54.0",
+ "windows 0.52.0",
 ]
 
 [[package]]

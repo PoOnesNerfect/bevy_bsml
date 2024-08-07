@@ -1,4 +1,4 @@
-use bevy::ui::{GridPlacement, Style};
+use bevy_ui::{GridPlacement, Style};
 use derive_more::From;
 
 use crate::class::ApplyClass;

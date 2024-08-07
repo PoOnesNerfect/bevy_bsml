@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub fn gap(px: f32) -> Gap {
     Gap(Val::Px(px))

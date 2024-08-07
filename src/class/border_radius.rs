@@ -1,5 +1,5 @@
-pub use bevy::ui::BorderRadius;
-use bevy::ui::Val;
+pub use bevy_ui::BorderRadius;
+use bevy_ui::Val;
 
 use super::ApplyClass;
 
@@ -110,7 +110,6 @@ pub enum BorderRadiusClass {
 
 impl ApplyClass<BorderRadiusClass> for BorderRadius {
     fn apply_class(&mut self, class: &BorderRadiusClass) {
-        println!("applying class: {:?}", class);
         match class {
             BorderRadiusClass::All(val) => *self = BorderRadius::all(val.clone()),
             BorderRadiusClass::Top(val) => {

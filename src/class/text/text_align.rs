@@ -1,7 +1,7 @@
 use super::ApplyClass;
-use bevy::text::Text;
+use bevy_text::Text;
 
-pub use bevy::text::JustifyText;
+pub use bevy_text::JustifyText;
 
 impl ApplyClass<JustifyText> for Text {
     fn apply_class(&mut self, class: &JustifyText) {

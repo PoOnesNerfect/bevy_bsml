@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_bsml::prelude::*;
+use bevy_ui::Interaction;
 
 #[derive(Debug, Clone, Component)]
 pub struct MenuScreen;

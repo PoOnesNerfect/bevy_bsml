@@ -1,5 +1,5 @@
-pub use bevy::ui::JustifyItems;
-use bevy::ui::Style;
+pub use bevy_ui::JustifyItems;
+use bevy_ui::Style;
 
 use crate::class::ApplyClass;
 

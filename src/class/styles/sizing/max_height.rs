@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub const MAX_H_AUTO: MaxHeight = MaxHeight(Val::Auto);
 pub const MAX_H_FULL: MaxHeight = MaxHeight(Val::Percent(100.0));

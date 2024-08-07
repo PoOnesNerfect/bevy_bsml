@@ -1,5 +1,6 @@
 use crate::class::ApplyClass;
-use bevy::{color::palettes::tailwind::*, prelude::*};
+use bevy_color::{palettes::tailwind::*, Alpha, Color};
+use bevy_ui::BackgroundColor;
 use std::ops::Div;
 
 pub fn bg_color(color: impl Into<Color>) -> BackgroundColorClass {

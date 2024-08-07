@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub const MIN_H_AUTO: MinHeight = MinHeight(Val::Auto);
 pub const MIN_H_FULL: MinHeight = MinHeight(Val::Percent(100.0));

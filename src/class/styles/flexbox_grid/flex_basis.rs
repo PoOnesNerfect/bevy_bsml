@@ -1,4 +1,4 @@
-use bevy::ui::Val;
+use bevy_ui::Val;
 
 use crate::class::ApplyClass;
 
@@ -16,7 +16,7 @@ pub fn basis_fract(fraction: f32) -> FlexBasis {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct FlexBasis(pub Val);
 
-impl ApplyClass<FlexBasis> for bevy::ui::Style {
+impl ApplyClass<FlexBasis> for bevy_ui::Style {
     fn apply_class(&mut self, class: &FlexBasis) {
         self.flex_basis = class.0;
     }

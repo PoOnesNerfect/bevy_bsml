@@ -1,8 +1,11 @@
+use bevy_ecs::prelude::*;
+use bevy_text::Text;
+use bevy_ui::prelude::*;
+
 use crate::{
     class::{ApplyClass, BsmlClass},
     Bsml,
 };
-use bevy::prelude::*;
 
 /// Bevy component: list of classes that apply the styles to UI Node.
 ///

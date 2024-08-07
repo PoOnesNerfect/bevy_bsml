@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub const MAX_W_AUTO: MaxWidth = MaxWidth(Val::Auto);
 pub const MAX_W_FULL: MaxWidth = MaxWidth(Val::Percent(100.0));

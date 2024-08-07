@@ -10,7 +10,7 @@ pub fn grow(val: f32) -> FlexGrow {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct FlexGrow(pub f32);
 
-impl ApplyClass<FlexGrow> for bevy::ui::Style {
+impl ApplyClass<FlexGrow> for bevy_ui::Style {
     fn apply_class(&mut self, class: &FlexGrow) {
         self.flex_grow = class.0;
     }

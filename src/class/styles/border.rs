@@ -1,4 +1,4 @@
-use bevy::ui::Val;
+use bevy_ui::Val;
 
 use crate::class::ApplyClass;
 
@@ -58,7 +58,7 @@ pub struct BorderRight(Val);
 #[derive(Debug, Clone, PartialEq)]
 pub struct BorderLeft(Val);
 
-impl ApplyClass<Border> for bevy::ui::Style {
+impl ApplyClass<Border> for bevy_ui::Style {
     fn apply_class(&mut self, class: &Border) {
         self.border.top = class.0.clone();
         self.border.bottom = class.0.clone();
@@ -67,39 +67,39 @@ impl ApplyClass<Border> for bevy::ui::Style {
     }
 }
 
-impl ApplyClass<BorderX> for bevy::ui::Style {
+impl ApplyClass<BorderX> for bevy_ui::Style {
     fn apply_class(&mut self, class: &BorderX) {
         self.border.left = class.0.clone();
         self.border.right = class.0.clone();
     }
 }
 
-impl ApplyClass<BorderY> for bevy::ui::Style {
+impl ApplyClass<BorderY> for bevy_ui::Style {
     fn apply_class(&mut self, class: &BorderY) {
         self.border.top = class.0.clone();
         self.border.bottom = class.0.clone();
     }
 }
 
-impl ApplyClass<BorderTop> for bevy::ui::Style {
+impl ApplyClass<BorderTop> for bevy_ui::Style {
     fn apply_class(&mut self, class: &BorderTop) {
         self.border.top = class.0.clone();
     }
 }
 
-impl ApplyClass<BorderBottom> for bevy::ui::Style {
+impl ApplyClass<BorderBottom> for bevy_ui::Style {
     fn apply_class(&mut self, class: &BorderBottom) {
         self.border.bottom = class.0.clone();
     }
 }
 
-impl ApplyClass<BorderRight> for bevy::ui::Style {
+impl ApplyClass<BorderRight> for bevy_ui::Style {
     fn apply_class(&mut self, class: &BorderRight) {
         self.border.right = class.0.clone();
     }
 }
 
-impl ApplyClass<BorderLeft> for bevy::ui::Style {
+impl ApplyClass<BorderLeft> for bevy_ui::Style {
     fn apply_class(&mut self, class: &BorderLeft) {
         self.border.left = class.0.clone();
     }

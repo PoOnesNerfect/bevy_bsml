@@ -1,5 +1,5 @@
 use crate::class::ApplyClass;
-use bevy::ui::{Style, Val};
+use bevy_ui::{Style, Val};
 
 pub const H_AUTO: Height = Height(Val::Auto);
 pub const H_FULL: Height = Height(Val::Percent(100.0));

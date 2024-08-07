@@ -1,6 +1,6 @@
 use crate::class::ApplyClass;
 
-pub use bevy::ui::FocusPolicy;
+pub use bevy_ui::FocusPolicy;
 
 pub const FOCUS_BLOCK: FocusPolicy = FocusPolicy::Block;
 pub const FOCUS_PASS: FocusPolicy = FocusPolicy::Pass;

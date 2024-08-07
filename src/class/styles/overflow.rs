@@ -1,7 +1,7 @@
 use crate::class::ApplyClass;
-use bevy::ui::{OverflowAxis, Style};
+use bevy_ui::{OverflowAxis, Style};
 
-pub use bevy::ui::Overflow;
+pub use bevy_ui::Overflow;
 
 pub const OVERFLOW_VISIBLE: Overflow = Overflow {
     x: OverflowAxis::Visible,

@@ -1,5 +1,6 @@
 use super::ApplyClass;
-use bevy::{color::palettes::tailwind::*, prelude::*};
+use bevy_color::{palettes::tailwind::*, Color};
+use bevy_text::Text;
 
 pub fn text_color(color: impl Into<Color>) -> TextColor {
     TextColor(color.into())
