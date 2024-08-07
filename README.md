@@ -32,6 +32,8 @@ To see the basic usages of bevy_bsml, check out examples:
     - [for](#for)
     - [slot](#slot)
     - [text](#text)
+    - [img](#img)
+    - [material](#material)
   - [Attributes in BSML](#attributes-in-bsml)
     - [class](#class)
       - [Changing Styles on Interaction](#changing-styles-on-interaction)
