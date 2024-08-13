@@ -82,9 +82,9 @@ pub(super) fn apply_class_system(
             }
         };
 
-        // if classes changed, apply all classes
-        if classes.is_changed() {
-            classes.0.iter().for_each(&mut update_styles);
+        // if classes changed, apply all base classes
+        if classes.is_changed() && *interaction != Interaction::None  {
+            classes.0.iter().filter(|(i, _)| *i == Interaction::None).for_each(&mut update_styles);
         }
 
         // overwrite specific interaction classes

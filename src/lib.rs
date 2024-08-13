@@ -200,7 +200,7 @@ macro_rules! bsml {
         __entity
     }};
     // handle (custom) component
-    (@element($this:ident, $commands:ident, $_slot:ident) ($component:expr) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
+    (@element($this:ident, $commands:ident, $_slot:ident) ($component:expr $(; labels=[$($label:expr),* $(,)?])?) $({$(($($def:tt)+) $({$($imp:tt)*})?)*})?) => {{
         let __tag = $crate::replace_ident!(self, $this, $component);
 
         let __entity = if __tag.taking_slot() {
@@ -212,6 +212,10 @@ macro_rules! bsml {
         } else {
             __tag.spawn($commands, &[])
         };
+
+        $(
+            $commands.entity(__entity).insert(($($label),*));
+        )?
 
         __entity
     }};
