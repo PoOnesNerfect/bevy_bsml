@@ -11,24 +11,24 @@ pub fn w(px: f32) -> Width {
     Width(Val::Px(px))
 }
 
-pub fn w_vw(percent: f32) -> Width {
-    Width(Val::Vw(percent))
+pub fn w_vw(fraction: f32) -> Width {
+    Width(Val::Vw(fraction * 100.))
 }
 
-pub fn w_vmin(percent: f32) -> Width {
-    Width(Val::VMin(percent))
+pub fn w_vmin(fraction: f32) -> Width {
+    Width(Val::VMin(fraction * 100.))
 }
 
-pub fn w_vmax(percent: f32) -> Width {
-    Width(Val::VMax(percent))
+pub fn w_vmax(fraction: f32) -> Width {
+    Width(Val::VMax(fraction * 100.))
 }
 
 pub fn w_div(n: u32, d: u32) -> Width {
     Width(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn w_fract(percent: f32) -> Width {
-    Width(Val::Percent(percent))
+pub fn w_fract(fraction: f32) -> Width {
+    Width(Val::Percent(fraction * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

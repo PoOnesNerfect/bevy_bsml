@@ -9,24 +9,24 @@ pub fn top(px: f32) -> Top {
     Top(Val::Px(px))
 }
 
-pub fn top_vw(percent: f32) -> Top {
-    Top(Val::Vw(percent))
+pub fn top_vw(fraction: f32) -> Top {
+    Top(Val::Vw(fraction * 100.))
 }
 
-pub fn top_vmin(percent: f32) -> Top {
-    Top(Val::VMin(percent))
+pub fn top_vmin(fraction: f32) -> Top {
+    Top(Val::VMin(fraction * 100.))
 }
 
-pub fn top_vmax(percent: f32) -> Top {
-    Top(Val::VMax(percent))
+pub fn top_vmax(fraction: f32) -> Top {
+    Top(Val::VMax(fraction * 100.))
 }
 
 pub fn top_div(n: u32, d: u32) -> Top {
     Top(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn top_fract(percent: f32) -> Top {
-    Top(Val::Percent(percent))
+pub fn top_fract(fract: f32) -> Top {
+    Top(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -35,9 +35,9 @@ fn loading_bar_system(mut query: Query<(&mut LoadPerc, &mut BsmlClasses)>, time:
     loaded.timer.tick(time.delta());
 
     if loaded.timer.just_finished() {
-        classes.insert(Interaction::None, w_fract(100.0));
+        classes.insert(Interaction::None, w_fract(1.0));
     } else if !loaded.timer.finished() {
-        classes.insert(Interaction::None, w_fract(loaded.timer.fraction() * 100.0));
+        classes.insert(Interaction::None, w_fract(loaded.timer.fraction()));
     }
 }
 

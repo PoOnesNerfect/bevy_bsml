@@ -9,24 +9,24 @@ pub fn right(px: f32) -> Right {
     Right(Val::Px(px))
 }
 
-pub fn right_vw(percent: f32) -> Right {
-    Right(Val::Vw(percent))
+pub fn right_vw(fraction: f32) -> Right {
+    Right(Val::Vw(fraction * 100.))
 }
 
-pub fn right_vmin(percent: f32) -> Right {
-    Right(Val::VMin(percent))
+pub fn right_vmin(fraction: f32) -> Right {
+    Right(Val::VMin(fraction * 100.))
 }
 
-pub fn right_vmax(percent: f32) -> Right {
-    Right(Val::VMax(percent))
+pub fn right_vmax(fraction: f32) -> Right {
+    Right(Val::VMax(fraction * 100.))
 }
 
 pub fn right_div(n: u32, d: u32) -> Right {
     Right(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn right_fract(percent: f32) -> Right {
-    Right(Val::Percent(percent))
+pub fn right_fract(fraction: f32) -> Right {
+    Right(Val::Percent(fraction * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

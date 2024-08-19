@@ -10,7 +10,7 @@ pub fn basis(px: f32) -> FlexBasis {
 }
 
 pub fn basis_fract(fraction: f32) -> FlexBasis {
-    FlexBasis(Val::Percent(fraction))
+    FlexBasis(Val::Percent(fraction * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

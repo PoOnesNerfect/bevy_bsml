@@ -1,6 +1,7 @@
 use bevy_ecs::prelude::*;
+use bevy_render::view::Visibility;
 use bevy_text::Text;
-use bevy_ui::prelude::*;
+use bevy_ui::{prelude::*, FocusPolicy};
 
 use crate::{
     class::{ApplyClass, BsmlClass},
@@ -57,12 +58,23 @@ pub(super) fn apply_class_system(
             Option<&mut ZIndex>,
             Option<&mut BorderColor>,
             Option<&mut BackgroundColor>,
+            Option<&mut Visibility>,
+            Option<&mut FocusPolicy>,
         ),
         (Or<(Changed<Interaction>, Changed<BsmlClasses>)>, With<Bsml>),
     >,
 ) {
-    for (interaction, classes, mut style, mut text, mut z_index, mut border_color, mut bg_color) in
-        &mut query
+    for (
+        interaction,
+        classes,
+        mut style,
+        mut text,
+        mut z_index,
+        mut border_color,
+        mut bg_color,
+        mut visibility,
+        mut focus_policy,
+    ) in &mut query
     {
         let mut update_styles = |(_, class): &(Interaction, BsmlClass)| {
             if let Some(style) = &mut style {
@@ -80,11 +92,21 @@ pub(super) fn apply_class_system(
             if let Some(bg_color) = &mut bg_color {
                 bg_color.apply_class(class);
             }
+            if let Some(visibility) = &mut visibility {
+                visibility.apply_class(class);
+            }
+            if let Some(focus_policy) = &mut focus_policy {
+                focus_policy.apply_class(class);
+            }
         };
 
         // if classes changed, apply all base classes
-        if classes.is_changed() && *interaction != Interaction::None  {
-            classes.0.iter().filter(|(i, _)| *i == Interaction::None).for_each(&mut update_styles);
+        if classes.is_changed() && *interaction != Interaction::None {
+            classes
+                .0
+                .iter()
+                .filter(|(i, _)| *i == Interaction::None)
+                .for_each(&mut update_styles);
         }
 
         // overwrite specific interaction classes

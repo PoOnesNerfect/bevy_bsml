@@ -9,24 +9,24 @@ pub fn left(px: f32) -> Left {
     Left(Val::Px(px))
 }
 
-pub fn left_vw(percent: f32) -> Left {
-    Left(Val::Vw(percent))
+pub fn left_vw(fraction: f32) -> Left {
+    Left(Val::Vw(fraction * 100.))
 }
 
-pub fn left_vmin(percent: f32) -> Left {
-    Left(Val::VMin(percent))
+pub fn left_vmin(fraction: f32) -> Left {
+    Left(Val::VMin(fraction * 100.))
 }
 
-pub fn left_vmax(percent: f32) -> Left {
-    Left(Val::VMax(percent))
+pub fn left_vmax(fraction: f32) -> Left {
+    Left(Val::VMax(fraction * 100.))
 }
 
 pub fn left_div(n: u32, d: u32) -> Left {
     Left(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn left_fract(percent: f32) -> Left {
-    Left(Val::Percent(percent))
+pub fn left_fract(fract: f32) -> Left {
+    Left(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

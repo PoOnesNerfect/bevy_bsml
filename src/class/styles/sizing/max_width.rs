@@ -11,24 +11,24 @@ pub fn max_w(px: f32) -> MaxWidth {
     MaxWidth(Val::Px(px))
 }
 
-pub fn max_w_vw(percent: f32) -> MaxWidth {
-    MaxWidth(Val::Vw(percent))
+pub fn max_w_vw(fraction: f32) -> MaxWidth {
+    MaxWidth(Val::Vw(fraction * 100.))
 }
 
-pub fn max_w_vmin(percent: f32) -> MaxWidth {
-    MaxWidth(Val::VMin(percent))
+pub fn max_w_vmin(fraction: f32) -> MaxWidth {
+    MaxWidth(Val::VMin(fraction * 100.))
 }
 
-pub fn max_w_vmax(percent: f32) -> MaxWidth {
-    MaxWidth(Val::VMax(percent))
+pub fn max_w_vmax(fraction: f32) -> MaxWidth {
+    MaxWidth(Val::VMax(fraction * 100.))
 }
 
 pub fn max_w_div(n: u32, d: u32) -> MaxWidth {
     MaxWidth(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn max_w_fract(percent: f32) -> MaxWidth {
-    MaxWidth(Val::Percent(percent))
+pub fn max_w_fract(fract: f32) -> MaxWidth {
+    MaxWidth(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

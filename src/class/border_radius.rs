@@ -28,7 +28,7 @@ pub fn rounded(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::All(Val::Percent(fract))
+    BorderRadiusClass::All(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_t(px: f32) -> BorderRadiusClass {
@@ -36,7 +36,7 @@ pub fn rounded_t(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_t_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::Top(Val::Percent(fract))
+    BorderRadiusClass::Top(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_b(px: f32) -> BorderRadiusClass {
@@ -44,7 +44,7 @@ pub fn rounded_b(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_b_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::Bottom(Val::Percent(fract))
+    BorderRadiusClass::Bottom(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_r(px: f32) -> BorderRadiusClass {
@@ -52,7 +52,7 @@ pub fn rounded_r(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_r_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::Right(Val::Percent(fract))
+    BorderRadiusClass::Right(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_l(px: f32) -> BorderRadiusClass {
@@ -60,7 +60,7 @@ pub fn rounded_l(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_l_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::Left(Val::Percent(fract))
+    BorderRadiusClass::Left(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_tl(px: f32) -> BorderRadiusClass {
@@ -68,7 +68,7 @@ pub fn rounded_tl(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_tl_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::TopLeft(Val::Percent(fract))
+    BorderRadiusClass::TopLeft(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_tr(px: f32) -> BorderRadiusClass {
@@ -76,7 +76,7 @@ pub fn rounded_tr(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_tr_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::TopRight(Val::Percent(fract))
+    BorderRadiusClass::TopRight(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_bl(px: f32) -> BorderRadiusClass {
@@ -84,7 +84,7 @@ pub fn rounded_bl(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_bl_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::BottomLeft(Val::Percent(fract))
+    BorderRadiusClass::BottomLeft(Val::Percent(fract * 100.))
 }
 
 pub fn rounded_br(px: f32) -> BorderRadiusClass {
@@ -92,7 +92,7 @@ pub fn rounded_br(px: f32) -> BorderRadiusClass {
 }
 
 pub fn rounded_br_fract(fract: f32) -> BorderRadiusClass {
-    BorderRadiusClass::BottomRight(Val::Percent(fract))
+    BorderRadiusClass::BottomRight(Val::Percent(fract * 100.))
 }
 
 #[derive(Clone, Debug, PartialEq)]

@@ -11,24 +11,24 @@ pub fn h(px: f32) -> Height {
     Height(Val::Px(px))
 }
 
-pub fn h_vh(percent: f32) -> Height {
-    Height(Val::Vh(percent))
+pub fn h_vh(fraction: f32) -> Height {
+    Height(Val::Vh(fraction * 100.))
 }
 
-pub fn h_vmin(percent: f32) -> Height {
-    Height(Val::VMin(percent))
+pub fn h_vmin(fraction: f32) -> Height {
+    Height(Val::VMin(fraction * 100.))
 }
 
-pub fn h_vmax(percent: f32) -> Height {
-    Height(Val::VMax(percent))
+pub fn h_vmax(fraction: f32) -> Height {
+    Height(Val::VMax(fraction * 100.))
 }
 
 pub fn h_div(n: u32, d: u32) -> Height {
     Height(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn h_frac(percent: f32) -> Height {
-    Height(Val::Percent(percent))
+pub fn h_fract(fract: f32) -> Height {
+    Height(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

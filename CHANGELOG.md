@@ -9,7 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.7...main
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.8...main
+
+## [0.14.8] - 2024-08-19
+
+- **Fixed**: Visibility and Focus Policy was not being applied.
+- **BREAKING**: All class functions (ex. `h_fract`, `h_vmax`, etc.)
+  that used to take percentage (0. ~ 100.) now takes fraction (0. ~ 1.).
+
+[0.14.8]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.7...v0.14.8
 
 ## [0.14.7] - 2024-08-12
 

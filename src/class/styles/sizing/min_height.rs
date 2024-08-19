@@ -11,24 +11,24 @@ pub fn min_h(px: f32) -> MinHeight {
     MinHeight(Val::Px(px))
 }
 
-pub fn min_h_vh(percent: f32) -> MinHeight {
-    MinHeight(Val::Vh(percent))
+pub fn min_h_vh(fraction: f32) -> MinHeight {
+    MinHeight(Val::Vh(fraction * 100.))
 }
 
-pub fn min_h_vmin(percent: f32) -> MinHeight {
-    MinHeight(Val::VMin(percent))
+pub fn min_h_vmin(fraction: f32) -> MinHeight {
+    MinHeight(Val::VMin(fraction * 100.))
 }
 
-pub fn min_h_vmax(percent: f32) -> MinHeight {
-    MinHeight(Val::VMax(percent))
+pub fn min_h_vmax(fraction: f32) -> MinHeight {
+    MinHeight(Val::VMax(fraction * 100.))
 }
 
 pub fn min_h_div(n: u32, d: u32) -> MinHeight {
     MinHeight(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn min_h_fract(percent: f32) -> MinHeight {
-    MinHeight(Val::Percent(percent))
+pub fn min_h_fract(fract: f32) -> MinHeight {
+    MinHeight(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -9,24 +9,24 @@ pub fn bottom(px: f32) -> Bottom {
     Bottom(Val::Px(px))
 }
 
-pub fn bottom_vw(percent: f32) -> Bottom {
-    Bottom(Val::Vw(percent))
+pub fn bottom_vw(fraction: f32) -> Bottom {
+    Bottom(Val::Vw(fraction * 100.))
 }
 
-pub fn bottom_vmin(percent: f32) -> Bottom {
-    Bottom(Val::VMin(percent))
+pub fn bottom_vmin(fraction: f32) -> Bottom {
+    Bottom(Val::VMin(fraction * 100.))
 }
 
-pub fn bottom_vmax(percent: f32) -> Bottom {
-    Bottom(Val::VMax(percent))
+pub fn bottom_vmax(fraction: f32) -> Bottom {
+    Bottom(Val::VMax(fraction * 100.))
 }
 
 pub fn bottom_div(n: u32, d: u32) -> Bottom {
     Bottom(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn bottom_fract(percent: f32) -> Bottom {
-    Bottom(Val::Percent(percent))
+pub fn bottom_fract(fract: f32) -> Bottom {
+    Bottom(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

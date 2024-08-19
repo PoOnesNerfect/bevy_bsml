@@ -11,24 +11,24 @@ pub fn min_w(px: f32) -> MinWidth {
     MinWidth(Val::Px(px))
 }
 
-pub fn min_w_vw(percent: f32) -> MinWidth {
-    MinWidth(Val::Vw(percent))
+pub fn min_w_vw(fraction: f32) -> MinWidth {
+    MinWidth(Val::Vw(fraction * 100.))
 }
 
-pub fn min_w_vmin(percent: f32) -> MinWidth {
-    MinWidth(Val::VMin(percent))
+pub fn min_w_vmin(fraction: f32) -> MinWidth {
+    MinWidth(Val::VMin(fraction * 100.))
 }
 
-pub fn min_w_vmax(percent: f32) -> MinWidth {
-    MinWidth(Val::VMax(percent))
+pub fn min_w_vmax(fraction: f32) -> MinWidth {
+    MinWidth(Val::VMax(fraction * 100.))
 }
 
 pub fn min_w_div(n: u32, d: u32) -> MinWidth {
     MinWidth(Val::Percent((n as f32 / d as f32) * 100.0))
 }
 
-pub fn min_w_fract(percent: f32) -> MinWidth {
-    MinWidth(Val::Percent(percent))
+pub fn min_w_fract(fract: f32) -> MinWidth {
+    MinWidth(Val::Percent(fract * 100.))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
