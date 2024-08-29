@@ -15,12 +15,12 @@ pub const TEXT_7XL: FontSize = FontSize(80.0);
 pub const TEXT_8XL: FontSize = FontSize(96.0);
 pub const TEXT_9XL: FontSize = FontSize(128.0);
 
-pub fn font(px: f32) -> FontSize {
+pub fn font_size(px: f32) -> FontSize {
     FontSize(px)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct FontSize(f32);
+pub struct FontSize(pub f32);
 
 impl FontSize {
     pub fn px(px: f32) -> FontSize {

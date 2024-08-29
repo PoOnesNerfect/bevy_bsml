@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.8...main
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.9...main
+
+## [0.14.9] - 2024-08-29
+
+- **BREAKING**: class function `font(px)` is not renamed to `font_size(px)`.
+- **Added**: Added class `FontHandle` and function `font(handle: Handle<Font>)` to apply font to text.
+
+[0.14.9]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.8...v0.14.9
 
 ## [0.14.8] - 2024-08-19
 

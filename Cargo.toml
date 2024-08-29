@@ -1,6 +1,6 @@
 [package]
 name = "bevy_bsml"
-version = "0.14.8"
+version = "0.14.9"
 description = "A UI library to compose UI elements using simple markup language, inspired by svelte and tailwindcss"
 edition = "2021"
 authors = ["Jack Lee <jack.y.l.dev@gmail.com>"]
@@ -13,6 +13,7 @@ rust-version = "1.56"
 
 [dependencies]
 bevy_app = { version = "0.14.1", default-features = false }
+bevy_asset = { version = "0.14.1", default-features = false }
 bevy_color = { version = "0.14.1", default-features = false }
 bevy_ecs = { version = "0.14.1", default-features = false }
 bevy_hierarchy = { version = "0.14.1", default-features = false }
