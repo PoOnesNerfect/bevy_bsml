@@ -29,7 +29,7 @@ bsml! {MenuItem;
             JUSTIFY_CENTER, ITEMS_CENTER, ROUNDED_FULL, border(5.0)
         ]
     ) {
-        (text class=[TEXT_BASE]) { "{}", self.name }
+        (text class=[TEXT_BASE, text(self.name)])
     }
 }
 

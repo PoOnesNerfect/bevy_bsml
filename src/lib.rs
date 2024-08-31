@@ -157,13 +157,18 @@ macro_rules! bsml {
         __entity
     }};
     // handle (text) element
-    (@element($this:ident, $commands:ident, $slot:ident) (text $($attr:tt)*) {$literal:expr $(,$value:expr)*}) => {{
+    (@element($this:ident, $commands:ident, $slot:ident) (text $($attr:tt)*) $({$($literal:expr $(,$value:expr)*)?})?) => {{
         let mut __bundle = $crate::bevy_ui::node_bundles::TextBundle::from_section(
-            format!($literal $(, $crate::replace_ident!(labels, labels_ref, $crate::replace_ident!(self, $this, $value)))*),
+            $crate::bsml!(@text_value($this) $({$($literal $(,$value)*)?})?),
             $crate::bevy_text::TextStyle::default()
         );
 
         $crate::bsml!(@spawn($this, $commands, $slot, __bundle) $($attr)*)
+    }};
+    (@text_value($this:ident)) => { String::new() };
+    (@text_value($this:ident) {}) => { String::new() };
+    (@text_value($this:ident) {$literal:expr $(,$value:expr)*}) => {{
+        format!($literal $(, $crate::replace_ident!(labels, labels_ref, $crate::replace_ident!(self, $this, $value)))*)
     }};
     // handle (img) element
     (@element($this:ident, $commands:ident, $slot:ident) (img $($attr:tt)*) {$image:expr}) => {{

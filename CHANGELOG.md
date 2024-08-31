@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.9...main
+[unreleased]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.10...main
+
+## [0.14.10] - 2024-08-31
+
+- **Added**: Added class `TextValue` and function `text(value: impl ToString)` to update text value for `(text)` element.
+- **Updated**: Updated README for added `text` class function.
+
+[0.14.10]: https://github.com/PoOnesNerfect/bevy_bsml/compare/v0.14.9...v0.14.10
 
 ## [0.14.9] - 2024-08-29
 

@@ -266,6 +266,8 @@ fn spawn_ui_system(mut commands: Commands) {
 
 Instead, content inside `{...}` is exactly like arguments of `format!(...)`.
 
+Optionally, you can also provide text value via class fn `text(impl ToString)`.
+
 Available attributes are [labels](#labels) and [class](#class).
 
 **Examples**:
@@ -274,12 +276,18 @@ _basic_:
 
 ```
 (text) { "hello world" }
+
+// same as
+(text class=[text("hello world")])
 ```
 
 _with arguments_:
 
 ```
 (text) { "{} + {} = {}", 1, 2, 1 + 2 }
+
+// same as
+(text class=[text(format!("{} + {} = {}", 1, 2, 1 + 2))])
 ```
 
 _with styling_:
@@ -288,15 +296,53 @@ _with styling_:
 (text class=[TEXT_XS]) { "I'm a tiny wittle text" }
 ```
 
+_with custom font_:
+
+```
+(text class=[font(my_font_handle)]) { "I'm a tiny wittle text" }
+```
+
 _with labels_:
 
 ```rust
 #[derive(Component)]
 pub struct MyText;
+
+#[derive(Component)]
+pub struct Menu;
+
+bsml! {Menu;
+    (node) {
+        (text labels=[MyText] class=[TEXT_XS]) { "I'm a tiny little text" }
+    }
+}
 ```
 
-```
-(text labels=[MyText] class=[TEXT_XS]) { "I'm a tiny little text" }
+_reactive example_:
+
+```rust
+#[derive(Component)]
+pub struct MyText(pub String);
+
+// Initialize text in class with its value.
+// Changes text size, and color when hovered
+bsml! {MyText;
+    (text class=[
+        TEXT_XS, TEXT_BLACK, text(self.0),
+        hovered(TEXT_2XL), hovered(TEXT_BLUE)
+    ])
+}
+
+// change text when value changes
+fn reactive_text(
+    query: Query<(&MyText, &mut BsmlClasses), Changed<MyText>>
+) {
+    let Ok((value, mut classes)) = query.get_single_mut() else {
+        return;
+    };
+
+    classes.insert(Interaction::None, text(&value.0));
+}
 ```
 
 ### img
